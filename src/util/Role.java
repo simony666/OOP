@@ -1,5 +1,7 @@
 package util;
 
 public enum Role {
-    Customer,Admin
+    Customer,
+    Admin,
+    Artist
 }

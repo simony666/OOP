@@ -111,7 +111,7 @@ public static void displayAdmin(){
 
                     // Manage Performance     
                     case 2:
-                        System.out.println("Manage Performance");
+                        Performance.PerformanceManagement.displayPerformanceScreen();
                         break;
 
                     // Manage Customer Seat

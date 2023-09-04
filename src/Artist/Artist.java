@@ -1,5 +1,6 @@
 package Artist;
 
+import java.util.ArrayList;
 import util.Role;
 
 /**
@@ -16,6 +17,9 @@ public class Artist {
     
     // static field
     private static int nextId = 1;
+    
+    // Shared ArrayList for storing artists
+    private static ArrayList<Artist> artistArrayList = new ArrayList<Artist>();
     
     // no arg constructor
     public Artist(){
@@ -54,6 +58,10 @@ public class Artist {
         return nextId;
     }
     
+    public static ArrayList<Artist> getArtistArrayList() {
+        return artistArrayList;
+    }
+    
     
     // setter / Mutuator for id, name, age, and role
     public void setId(int id){
@@ -68,4 +76,8 @@ public class Artist {
          this.age = age;
     }
    
+    public static void setArtistArrayList(ArrayList<Artist> artistList) {
+        artistArrayList = artistList;
+    }
+    
 }

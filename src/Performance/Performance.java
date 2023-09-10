@@ -28,9 +28,10 @@ public class Performance {
         this.id = nextId++;
     }
 
-    public Performance(String name) {
+    public Performance(String name, String type) {
         this();
         this.name = name;
+        this.type = type;
     }
 
     // Getters
@@ -68,6 +69,8 @@ public class Performance {
         this.type = type;
     }
 
+    
+    // method:
     // Static method to set the entire pfmArrayList
     public static void setPfmArrayList(ArrayList<Performance> pfmList) {
         pfmArrayList = pfmList;
@@ -78,8 +81,8 @@ public class Performance {
     }
 
     // Method to add a new performance and increment nextId
-    public static void addPerformance(String name) {
-        Performance performance = new Performance(name);
+    public static void addPerformance(String name, String type) {
+        Performance performance = new Performance(name,type);
         pfmArrayList.add(performance);
     }
 }

@@ -1,7 +1,6 @@
 package Artist;
 
 import util.SymbolValidator;
-import util.Role;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -114,7 +113,7 @@ public static void displayArtistScreen() {
     }
 
     // Create the artist
-    Artist artist = new Artist(artistName, artistAge, Role.Artist);
+    Artist artist = new Artist(artistName, artistAge);
 
     // Add the artist to the ArrayList
     Artist.getArtistArrayList().add(artist);
@@ -142,13 +141,13 @@ public static void displayArtistScreen() {
     System.out.println("======================   Artist Lists  =======================");
     System.out.println("==============================================================" + "\n");
     System.out.println("***************************************************************");
-    System.out.printf("%-15s %-20s %-15s %-10s", "Artist ID", "Artist Name", "Artist Age", "Role");
+    System.out.printf("%-15s %-20s %-15s", "Artist ID", "Artist Name", "Artist Age");
     System.out.println("\n" + "***************************************************************");
 
     // retrieve artist info from arrayList
     for (int i = 0; i < artistArrayList.size(); i++) {
         Artist a = artistArrayList.get(i);
-        System.out.printf("%s %17s %19d %19s", a.getId(), a.getName(), a.getAge(), a.getRole() + "\n");
+        System.out.printf("%s %18s %20s", a.getId(), a.getName(), a.getAge() + "\n");
     }
 }
 

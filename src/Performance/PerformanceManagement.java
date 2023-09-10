@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class PerformanceManagement {
-    // performance array List
+public class PerformanceManagement{
+    // performance and Artist array List
     //static ArrayList<Performance> array = new ArrayList<Performance>();
     static ArrayList<Performance> pfmArrayList = Performance.getPfmArrayList(); 
     static ArrayList<Artist.Artist> artistArrayList = Artist.Artist.getArtistArrayList(); 
@@ -136,7 +136,8 @@ public class PerformanceManagement {
             }
 
             // Capture additional performance details
-            String pfmName;
+            // perforance name
+            String pfmName,pfmType;
             do {
                 System.out.print("Please enter Performance name: ");
                 pfmName = sc.nextLine().trim();
@@ -145,8 +146,17 @@ public class PerformanceManagement {
                 }
             } while (pfmName.isEmpty());
 
+            do {
+                System.out.print("Please enter Performance type: ");
+                pfmType = sc.nextLine().trim();
+                if (pfmType.isEmpty()) {
+                    System.out.println("Performance type cannot be empty. Please try again.");
+                }
+            } while (pfmType.isEmpty());
+            
+            
             // Create a new Performance instance
-            Performance p = new Performance(pfmName);
+            Performance p = new Performance(pfmName,pfmType);
             p.setArtist(selectedArtist);
 
             // Add the selected Artist to performance Array List
@@ -169,17 +179,17 @@ public class PerformanceManagement {
         }
 
         // Display the heading
-        System.out.println("\n" + "==============================================================");
-        System.out.println("====================   Performance Lists  ====================");
-        System.out.println("==============================================================" + "\n");
-        System.out.println("***************************************************************");
-        System.out.printf("%-15s %-20s %-15s", "Performance ID", "Performance Name",  "Artist Name");
-        System.out.println("\n" + "***************************************************************");
+        System.out.println("\n" + "======================================================================");
+        System.out.println("========================   Performance Lists  ========================");
+        System.out.println("======================================================================" + "\n");
+        System.out.println("**********************************************************************");
+        System.out.printf("%-15s %-18s %-18s %-20s", "Performance ID", "Performance Name",  "Performance Type","Artist Name");
+        System.out.println("\n" + "**********************************************************************");
 
         // Retrieve performance info from the arrayList
         for (Performance p : pfmArrayList) {
             Artist.Artist artist = p.getArtist();
-            System.out.printf("%-15s %-20s %-15s ", p.getId(), p.getName(),  artist.getName() + "\n");
+            System.out.printf("%-15s %-18s %-18s %-20s", p.getId(), p.getName(), p.getType(), artist.getName() + "\n");
         }
     }
 

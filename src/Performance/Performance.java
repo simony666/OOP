@@ -9,6 +9,11 @@ package Performance;
  * @author Zy
  */
 import java.util.ArrayList;
+import util.Database;
+import Artist.Artist;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Performance {
     // Performance ArrayList
@@ -18,7 +23,8 @@ public class Performance {
     private int id;
     private String name;
     private String type;
-    private Artist.Artist artist;
+    private Artist artist;
+    private Database db = new Database('ip',user,pass,database);
 
     // Static field
     private static int nextId = 1;
@@ -55,7 +61,7 @@ public class Performance {
         return pfmArrayList;
     }
     
-    public Artist.Artist getArtist(){
+    public Artist getArtist(){
         return artist;
     }
 
@@ -74,9 +80,23 @@ public class Performance {
     // Static method to set the entire pfmArrayList
     public static void setPfmArrayList(ArrayList<Performance> pfmList) {
         pfmArrayList = pfmList;
+        
+        Connection conn = db.getConnection();
+        ResultSet result;
+        try {
+            result = db.runSql("select * from database");
+        } catch (SQLException ex) {
+            //connection fail
+        }
+        
+        while (result.next()){
+            //assume table got id,name,pass
+            String name = result.getString('Name');
+            String name = result.getString('Type');
+        }
     }
     
-    public void setArtist(Artist.Artist artist){
+    public void setArtist(Artist artist){
         this.artist = artist;
     }
 

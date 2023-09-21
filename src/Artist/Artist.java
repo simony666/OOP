@@ -1,6 +1,12 @@
 package Artist;
 
 import java.util.ArrayList;
+import util.Database;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -10,6 +16,7 @@ public class Artist extends util.Person {
     
     // non-static field
     private int id;
+    private Database db;
 //    private String name;
 //    private int age;
 //    private Role role;
@@ -78,6 +85,21 @@ public class Artist extends util.Person {
    
     public static void setArtistArrayList(ArrayList<Artist> artistList) {
         artistArrayList = artistList;
+        
+        Connection conn = db.getConnection();
+        ResultSet result;
+        try {
+            result = db.runSql("select * from database");
+        } catch (SQLException ex) {
+            //connection fail
+        }
+        
+        while (result.next()){
+            //assume table got id,name,pass
+            int id = result.getInt('ID');
+            String name = result.getString('Name');
+        }
+        
     }
     
 }

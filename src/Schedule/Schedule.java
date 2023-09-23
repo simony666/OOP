@@ -7,6 +7,13 @@ package Schedule;
 import Performance.Performance;
 import java.util.ArrayList;
 import java.util.Date;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import util.Database;
+import java.sql.PreparedStatement;
+
 
 /**
  *
@@ -25,7 +32,7 @@ public class Schedule {
    
     // Schedule ArrayList
     private static ArrayList<Schedule> scheduleArrayList = new ArrayList<Schedule>();
-
+    private static Database db = new Database("C:/Users/User/OneDrive/ruyan/TAR UC/oop/oop assignment database/assignment database.db");
     
     // constructor
     public Schedule() {
@@ -110,4 +117,49 @@ public class Schedule {
 //        pfmArrayList.add(performance);
 //    }
    
+    // Database
+     public void saveToDatabase(Database database) {
+        try {
+            Connection connection = database.getConnection();
+            String sql = "INSERT INTO schedule (date, startTime, endTime, durationHours, durationMinutes) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, date);
+            statement.setString(2, startTime);
+            statement.setString(3, endTime);
+            statement.setInt(4, durationHours);
+            statement.setInt(5, durationMinutes);
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ArrayList<Schedule> loadFromDatabase(Database db) {
+        ArrayList<Schedule> schedules = new ArrayList<>();
+
+        try {
+            Connection connection = db.getConnection();
+            String sql = "SELECT * FROM schedule";
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                Schedule schedule = new Schedule(
+                    resultSet.getString("date"),
+                    resultSet.getString("startTime"),
+                    resultSet.getString("endTime"),
+                    resultSet.getInt("durationHours"),
+                    resultSet.getInt("durationMinutes")
+                );
+
+                schedule.setId(resultSet.getInt("id"));
+                schedules.add(schedule);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return schedules;
+    }
 }

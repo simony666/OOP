@@ -5,16 +5,25 @@
 package Schedule;
 
 
+import Artist.Artist;
+import Performance.Performance;
+import Performance.PerformanceManagement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.Collections;
+import java.util.Comparator;
+
 import util.ClearScreen;
 import util.Validator;
 
 public class ScheduleManagement {
     static ArrayList<Schedule> scheduleList = Schedule.getScheduleArrayList();
+    static ArrayList<Performance> pfmArrayList = Performance.getPfmArrayList();
+    static ArrayList<Artist> artistArrayList = Artist.getArtistArrayList(); 
+    private static int nextId = 1; // Initialize nextId
 
     // Display Schedule Screen
     public static void displayScheduleScreen() {
@@ -37,7 +46,7 @@ public class ScheduleManagement {
                 String input = sc.nextLine();
 
                 // Symbol checking
-                if (util.Validator.containsSymbol(input)) {
+                if (Validator.containsSymbol(input)) {
                     System.out.println("Input contains specific symbols.");
                 } else {
                     int selection = Integer.parseInt(input);
@@ -46,13 +55,18 @@ public class ScheduleManagement {
                         // Add Schedule
                         case 1:
                             ClearScreen.cls();
-                            addSchedule(scheduleList);
+                            try {
+                                addSchedule(artistArrayList, scheduleList, pfmArrayList);
+                            } catch (ParseException e) {
+                                System.out.println("Invalid date format. Please try again.");
+                                // You can add additional error handling if needed
+                            }
                             break;
 
                         // View Schedule
                         case 2:
                             ClearScreen.cls();
-                            viewSchedule(scheduleList);
+                            viewSchedule(scheduleList, pfmArrayList);
                             break;
 
                         // Modify Schedule
@@ -79,7 +93,7 @@ public class ScheduleManagement {
 
                         // Other input within the range of 1-6
                         default:
-                            System.out.println("Invalid range. Please enter a number between 1 to 6.");
+                            System.out.println("Invalid range. Please enter a number between 1 and 6.");
                             ScheduleManagement.displayScheduleScreen();
                     }
                 }
@@ -90,17 +104,56 @@ public class ScheduleManagement {
     }
 
     // Add schedule
-    public static void addSchedule(ArrayList<Schedule> scheduleArrayList) {
+    public static void addSchedule(ArrayList<Artist> artistArrayList, ArrayList<Schedule> scheduleArrayList, ArrayList<Performance> pfmArrayList) throws ParseException {
             Scanner sc = new Scanner(System.in);
             String dateStr;
             SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
             boolean isValidDate = false;
-
             Date currentDate = new Date(); // Get the current date
 
-        System.out.println("\n" + "===============================================================================");
-        System.out.println("========================   Adding Performance Schedule  =======================");
-        System.out.println("===============================================================================" + "\n");
+        // Check if there are any performances in the list
+        if (pfmArrayList.isEmpty()) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("!!! No performance added, please add an artist to view. !!!");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + "\n");
+            PerformanceManagement.displayPerformanceScreen();
+            return;
+        } else {
+            // Display available artists
+            PerformanceManagement.viewPerformance(artistArrayList, pfmArrayList);
+        }
+
+        // Capture user input for the artist ID
+        System.out.print("Please enter the performance ID to add the schedule: ");
+        String pId = sc.nextLine();
+
+
+        // Check if the artist ID contains symbols
+        if (Validator.containsSymbol(pId)) {
+            System.out.println("Input contains specific symbols.");
+            return;
+        }
+
+        try {
+            int performanceId = Integer.parseInt(pId);
+
+            // Check whether the artist ID exists
+            Performance pName = null;
+            for (Performance p : pfmArrayList) {
+                if (p.getId() == performanceId) {
+                    pName = p;
+                    break;
+                }
+            }
+
+            if (pName == null) {
+                System.out.println("The performance with ID " + performanceId + " does not exist.");
+                return;
+            }
+            
+            System.out.println("\n" + "===============================================================================");
+            System.out.println("========================   Adding Performance Schedule  =======================");
+            System.out.println("===============================================================================" + "\n");
             
             do {
                 // Prompt the user to enter a date
@@ -127,112 +180,158 @@ public class ScheduleManagement {
                 }
             } while (!isValidDate);
 
-        String startTime = "";
-        String endTime = "";
-        SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa");
-        Date d1 = null;
-        Date d2 = null;
-        boolean isValidTime = false;
+            String startTime = "";
+            String endTime = "";
+//            SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa");
+            Date d1 = null;
+            Date d2 = null;
+            boolean isValidTime = false;
 
-        int hours = 0;
-        int minutes = 0;
+            int hours = 0;
+            int minutes = 0;
 
-        while (true) {
-            // Prompt the user to enter performance starting time
-            System.out.print("Enter performance starting time (hh:mm AM/PM): ");
-            startTime = sc.nextLine();
+            while (true) {
+                // Prompt the user to enter performance starting time
+                System.out.print("Enter performance starting time (HH:mm): ");
+                startTime = sc.nextLine();
 
-            // Check if the input is empty
-            if (Validator.isInputEmpty(startTime)) {
-                System.out.println("Performance starting time is required. Please try again.");
-                continue; // Prompt again if it's empty
+                // Check if the input is empty
+                if (Validator.isInputEmpty(startTime)) {
+                    System.out.println("Performance starting time is required. Please try again.");
+                    continue; // Prompt again if it's empty
+                }
+
+                try {
+                    SimpleDateFormat sdfTime24 = new SimpleDateFormat("HH:mm");
+                    d1 = sdfTime24.parse(startTime);
+                    isValidTime = true; // Set the flag to true if parsing succeeds
+                } catch (ParseException e) {
+                    System.out.println("Invalid time format. Please try again.");
+                    continue; // Prompt again if parsing fails
+                }
+
+                // Prompt the user to enter performance ending time
+                System.out.print("Enter performance ending time (HH:mm): ");
+                endTime = sc.nextLine();
+
+                // Check if the input is empty
+                if (Validator.isInputEmpty(endTime)) {
+                    System.out.println("Performance ending time is required. Please try again.");
+                    continue; // Prompt again if it's empty
+                }
+
+                try {
+                    SimpleDateFormat sdfTime24 = new SimpleDateFormat("HH:mm");
+                    d2 = sdfTime24.parse(endTime);
+                    isValidTime = true; // Set the flag to true if parsing succeeds
+                } catch (ParseException e) {
+                    System.out.println("Invalid time format. Please try again.");
+                    continue; // Prompt again if parsing fails
+                }
+
+                // Calculate the time difference in hours and minutes
+                long diffMs = d2.getTime() - d1.getTime();
+
+                // Handle the case where the end time is on the next day
+                if (diffMs < 0) {
+                    diffMs += 24 * 60 * 60 * 1000; // Add 24 hours in milliseconds
+                }
+
+                long diffSec = diffMs / 1000;
+                hours = (int) (diffSec / 3600); // Total duration in hours
+                int remainingSeconds = (int) (diffSec % 3600);
+                minutes = remainingSeconds / 60; // Remaining seconds converted to minutes
+
+                // Adjust for the case where the end time is before the start time
+                if (hours < 0 || (hours == 0 && minutes < 0)) {
+                    hours += 24;
+                }
+
+                // Check if the duration is at least 2 hours
+                if (hours >= 2 && minutes >= 0) {
+                    Date date; // Declare date outside the try-catch block
+
+                    try {
+                         date = sdfDate.parse(dateStr); // Initialize date inside the try block
+
+                        // Create a Schedule object
+                        Schedule schedule = new Schedule(date, startTime, endTime, hours, minutes, pName);
+
+                        // Increment the nextId for the next schedule
+                        nextId++;
+                        // Add the Schedule object to the ArrayList
+                        scheduleArrayList.add(schedule);
+
+                        // Print a message to confirm that the schedule is added
+                        System.out.println("Schedule added successfully!");
+
+                        // Ask the user if they want to add another schedule
+                        System.out.print("Do you want to add another schedule? (y/n): ");
+                        String addAnother = sc.nextLine().toLowerCase();
+
+                        if (!addAnother.equals("y")) {
+                            break; // Exit the loop if the user doesn't want to add another schedule
+                        }
+                    } catch (ParseException e) {
+                        System.out.println("Invalid date format. Please try again.");
+                        // You can add additional error handling if needed
+                    }
+                } else {
+                    System.out.println("Invalid performance duration. The duration must be at least 2 hours. Please try again.");
+                }
             }
-
-            try {
-                d1 = sdfTime.parse(startTime);
-                isValidTime = true; // Set the flag to true if parsing succeeds
-            } catch (ParseException e) {
-                System.out.println("Invalid time format. Please try again.");
-                continue; // Prompt again if parsing fails
-            }
-
-            // Prompt the user to enter performance ending time
-            System.out.print("Enter performance ending time (hh:mm aa AM/PM): ");
-            endTime = sc.nextLine();
-
-            // Check if the input is empty
-            if (Validator.isInputEmpty(endTime)) {
-                System.out.println("Performance ending time is required. Please try again.");
-                continue; // Prompt again if it's empty
-            }
-
-            try {
-                d2 = sdfTime.parse(endTime);
-                isValidTime = true; // Set the flag to true if parsing succeeds
-            } catch (ParseException e) {
-                System.out.println("Invalid time format. Please try again.");
-                continue; // Prompt again if parsing fails
-            }
-
-            // Calculate the time difference in hours and minutes
-            long diffMs = d2.getTime() - d1.getTime();
-            long diffSec = diffMs / 1000;
-            hours = (int) (diffSec / 3600); // Total duration in hours
-            int remainingSeconds = (int) (diffSec % 3600);
-            minutes = remainingSeconds / 60; // Remaining seconds converted to minutes
-
-            // Adjust for the case where the end time is before the start time
-            if (hours < 0 || (hours == 0 && minutes < 0)) {
-                hours += 24;
-            }
-
-            // Check if the duration is at least 2 hours
-            if (hours >= 2 && minutes >= 0) {
-                // Create a Schedule object
-                Schedule schedule = new Schedule(dateStr, startTime, endTime, hours, minutes);
-
-                // Add the Schedule object to the ArrayList
-                scheduleArrayList.add(schedule);
-
-                // Print a message to confirm that the schedule is added
-                System.out.println("Schedule added successfully!");
-                break; // Exit the loop if the duration is valid
-            } else {
-                System.out.println("Invalid performance duration. The duration must be at least 2 hours. Please try again.");
-            }
+        }catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a numeric value for the artist ID.");
         }
+        
     }
 
 
 
     // view schedule
-    public static void viewSchedule(ArrayList<Schedule> scheduleArrayList) {
+        public static void viewSchedule(ArrayList<Schedule> scheduleArrayList, ArrayList<Performance> pfmArrayList) {
         ArrayList<Schedule> scheduleList = Schedule.getScheduleArrayList();
 
-        // check if there are any artists in the list
+        // check if there are any schedules in the list
         if (scheduleList.isEmpty()) {
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("! No Schedule added, please add schedule to view. !");
+            System.out.println("! No Schedule added, please add a schedule to view. !");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + "\n");
             ScheduleManagement.displayScheduleScreen();
             return;
         }
 
-        // display the heading
-        System.out.println("\n" + "========================================================================");
-        System.out.println("========================   Performance Schedule  =======================");
-        System.out.println("========================================================================" + "\n");
-        System.out.println("****************************************************************************");
-        System.out.printf("%-15s %-15s %-15s %-15s %-25s", "Schedule ID", "Schedule Date", "Starting Time", 
-                "Ending time","duration");
-        System.out.println("\n" + "****************************************************************************");
-        // retrieve artist info from arrayList
-        for (int i = 0; i < scheduleList.size(); i++) {
-            Schedule s = scheduleList.get(i);
-            String duration = String.format("%d hrs %d min", s.getDurationHours(), s.getDurationMinutes());
-            System.out.printf("%-10s %15s %15s %15s %15s %25s", s.getId(), s.getDate(), s.getStartTime(),
-                    s.getEndTime(), duration, "\n");
+        // Sort the scheduleList based on the date in ascending order
+        Collections.sort(scheduleList, new Comparator<Schedule>() {
+            @Override
+            public int compare(Schedule schedule1, Schedule schedule2) {
+                // Assuming that getDate() returns a Date object
+                return schedule1.getDate().compareTo(schedule2.getDate());
+            }
+        });
 
+        // display the heading
+        System.out.println("\n" + "===========================================================================================================");
+        System.out.println("=========================================   Performance Schedule  ========================================");
+        System.out.println("=========================================================================================================" + "\n");
+        System.out.println("********************************************************************************");
+        System.out.printf("%-15s %-15s %-15s %-15s %-15s %-15s", "Schedule ID", "Schedule Date", "Starting Time",
+                "Ending time", "Duration", "Performance Name");
+        System.out.println("\n" + "************************************************************************************");
+
+        int scheduleId = 1; // Initialize the schedule ID
+
+        // retrieve schedule info from ArrayList
+        for (Schedule s : scheduleList) {
+            String duration = String.format("%d hrs %d min", s.getDurationHours(), s.getDurationMinutes());
+            Performance p = s.getPerformance();
+
+            // Format the date to "dd/MM/yyyy" before printing
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String formattedDate = dateFormat.format(s.getDate());
+
+            System.out.printf("%-10s %15s %15s %15s %15s %15s %15ss", s.getId(), formattedDate, s.getStartTime(),
+                    s.getEndTime(), duration, p.getName(),"\n");
         }
     }
 }

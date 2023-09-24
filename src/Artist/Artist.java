@@ -1,16 +1,15 @@
 package Artist;
 
 import java.util.ArrayList;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.Connection;
+import util.Person;
+import util.Database;
 
 import util.Database;
 /**
  *
  * @author Zy
  */
-public class Artist extends util.Person {
+public class Artist extends Person {
     
     // non-static field
     private int id;

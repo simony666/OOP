@@ -7,8 +7,6 @@ import util.Database;
 import java.sql.Connection;
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
-
 
 
 /**
@@ -131,7 +129,17 @@ private static Artist addArtist() {
         }
     }
 
-    return null;
+
+    // Create the artist
+    Artist artist = new Artist(artistName, bandName);
+    //Connection dbConnection = Database.getConnection();
+    Database.insertArtist( "ArtistName", "BandName");
+
+    // Add the artist to the ArrayList
+    Artist.getArtistArrayList().add(artist);
+    System.out.println("Artist added successfully");
+
+    return artist; // Return the created artist
 }
 
 

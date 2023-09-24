@@ -1,8 +1,11 @@
 package main;
 
 import Artist.ArtistManagement;
-import util.SymbolValidator;
+import Performance.PerformanceManagement;
+import Schedule.ScheduleManagement;
+import util.Validator;
 import java.util.Scanner;
+import util.ClearScreen;
 
 /**
  *
@@ -14,7 +17,7 @@ public class mainScreen {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       
+       ClearScreen.cls();
        displayMainScreen();
         
     }
@@ -38,7 +41,7 @@ public class mainScreen {
             System.out.print("Please enter your selection: ");
             String input = sc.nextLine();
 
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains the specific symbols.");
             } else {
                 
@@ -48,11 +51,13 @@ public class mainScreen {
                 switch(selection){
                     // Admin login
                     case 1:
+                         ClearScreen.cls();
                          displayAdmin();
                          break;
 
                     // customer login      
                     case 2:
+                        ClearScreen.cls();
                         System.out.println("Welcome ???");
                         break;
                     
@@ -96,7 +101,7 @@ public static void displayAdmin(){
             System.out.print("Please enter your selection: ");
             String input = sc.nextLine();
 
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains the specific symbols.");
             } else {
                 
@@ -107,36 +112,43 @@ public static void displayAdmin(){
 
                     // Manage Artist
                     case 1:
+                        ClearScreen.cls();
                          ArtistManagement.displayArtistScreen();
                          break;
 
                     // Manage Performance     
                     case 2:
-                        Performance.PerformanceManagement.displayPerformanceScreen();
+                        ClearScreen.cls();
+                        PerformanceManagement.displayPerformanceScreen();
                         break;
 
                     // Manage schedule
                     case 3:
-                        Schedule.ScheduleManagement.displayScheduleScreen();
+                        ClearScreen.cls();
+                        ScheduleManagement.displayScheduleScreen();
                         break;
                         
                     // Manage Customer Seat
                     case 4:
+                         ClearScreen.cls();
                          System.out.println("Manage Customer Seat");
                          break;
 
                     // Manage Payment
                     case 5:
+                        ClearScreen.cls();
                          System.out.println("Manage Payment");
                          break;
 
                     // Manage Customer     
                     case 6:
+                        ClearScreen.cls();
                          System.out.println("Manage Customer");
                          break;
 
                    // Back to main menu    
                     case 7:
+                        ClearScreen.cls();
                         displayMainScreen();
                         break;
 

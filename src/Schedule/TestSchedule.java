@@ -19,7 +19,8 @@ public class TestSchedule {
         ArrayList<Schedule> scheduleList = new ArrayList<>();
 
         // Call the addSchedule method
-        //scheduleManager.addSchedule(scheduleList);
+        scheduleManager.addSchedule(scheduleList);
+        //scheduleManager.viewSchedule(scheduleList);
         
  System.out.println("\n" + "========================================================================");
         System.out.println("========================   Performance Schedule  =======================");

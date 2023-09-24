@@ -73,17 +73,5 @@ public class Artist extends Person {
         artistArrayList = artistList; // Assuming artistArrayList is a class variable
     }
     
-    public static void insertArtist(Connection connection, String name, String bandName) {
-        String sql = "INSERT INTO Artist (name, bandName) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, bandName);
-            preparedStatement.executeUpdate();
-            System.out.println("Artist added successfully");
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-}
-
 
 }

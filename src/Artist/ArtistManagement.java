@@ -121,7 +121,7 @@ private static Artist addArtist() {
         Artist.getArtistArrayList().add(artist);
         System.out.println("Artist added successfully");
 
-        return artist; // Return the created artist
+        // return artist; // Return the created artist
     } catch (IllegalArgumentException e) {
         if (e.getMessage().equals("Band name cannot be empty.")) {
             System.out.println("Invalid band name input. Band name cannot be empty.");
@@ -133,7 +133,9 @@ private static Artist addArtist() {
     // Create the artist
     Artist artist = new Artist(artistName, bandName);
     //Connection dbConnection = Database.getConnection();
+    System.out.println("2");
     Database.insertArtist( "ArtistName", "BandName");
+    System.out.println("3");
 
     // Add the artist to the ArrayList
     Artist.getArtistArrayList().add(artist);

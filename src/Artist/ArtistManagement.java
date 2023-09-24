@@ -1,14 +1,14 @@
 package Artist;
+
 import util.ClearScreen;
 import util.Validator;
+import util.Database;
+
+import java.sql.Connection;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 
-/**
- *
- * @author Zy
- */
 
 
 /**
@@ -83,49 +83,57 @@ public static void displayArtistScreen() {
         
     
     // add artist
-    private static Artist addArtist() {
+private static Artist addArtist() {
     Scanner sc = new Scanner(System.in);
 
+    System.out.println("\n========================================");
+    System.out.println("============   Add Artist  =============");
+    System.out.println("========================================\n");
     String artistName;
     do {
         System.out.print("Please enter Artist Name: ");
         artistName = sc.nextLine().trim();
         if (artistName.isEmpty()) {
             System.out.println("Artist Name cannot be empty. Please try again.");
+        } else {
+            if (!Validator.containsNonNumeric(artistName)) {
+                System.out.println("Artist Name must contain at least one letter or non-numeric character. Please try again.");
+                artistName = ""; // Reset artistName to trigger the loop again
+            }
         }
     } while (artistName.isEmpty());
 
-    int artistAge;
+    String bandName = null; // Set the default value to null
 
     try {
-        System.out.print("Please enter Artist age: ");
-        artistAge = sc.nextInt();
-        sc.nextLine(); // Consume the newline character
+        System.out.print("Please enter Band name (or leave it empty for no band): ");
+        String input = sc.nextLine().trim();
 
-        if (artistAge <= 0 || artistAge >= 100) {
-            throw new IllegalArgumentException("Invalid age");
+        if (!input.isEmpty()) {
+            bandName = input; // Update the bandName if input is not empty
         }
+        
+        // Create the artist
+        Artist artist = new Artist(artistName, bandName);
+        
+        // Insert the artist into the database
+        //Database.insertArtist(artist.getName(), artist.getBandName());
+
+        // Add the artist to the ArrayList
+        Artist.getArtistArrayList().add(artist);
+        System.out.println("Artist added successfully");
+
+        return artist; // Return the created artist
     } catch (IllegalArgumentException e) {
-        if (e.getMessage().equals("Invalid age")) {
-            System.out.println("Invalid age input. Age must be between 1 and 99.");
+        if (e.getMessage().equals("Band name cannot be empty.")) {
+            System.out.println("Invalid band name input. Band name cannot be empty.");
             return null; // Return null to indicate an error
         }
-        artistAge = 0;
-    } catch (InputMismatchException ex) {
-        System.out.println("Invalid input. Please enter a numeric value for age.");
-        sc.nextLine();
-        return null; // Return null to indicate an error
     }
 
-    // Create the artist
-    Artist artist = new Artist(artistName, artistAge);
-
-    // Add the artist to the ArrayList
-    Artist.getArtistArrayList().add(artist);
-    System.out.println("Artist added successfully");
-
-    return artist; // Return the created artist
+    return null;
 }
+
 
 
     // view artist
@@ -146,13 +154,13 @@ public static void displayArtistScreen() {
     System.out.println("======================   Artist Lists  =======================");
     System.out.println("==============================================================" + "\n");
     System.out.println("***************************************************************");
-    System.out.printf("%-15s %-20s %-15s", "Artist ID", "Artist Name", "Artist Age");
+    System.out.printf("%-15s %-20s %-15s", "Artist ID", "Artist Name", "Band Name");
     System.out.println("\n" + "***************************************************************");
 
     // retrieve artist info from arrayList
     for (int i = 0; i < artistArrayList.size(); i++) {
         Artist a = artistArrayList.get(i);
-        System.out.printf("%s %18s %20s", a.getId(), a.getName(), a.getAge() + "\n");
+        System.out.printf("%s %20s %20s", a.getId(), a.getName(), a.getBandName()+ "\n");
     }
 }
 
@@ -201,9 +209,9 @@ public static void displayArtistScreen() {
     public static void updateArtist(ArrayList<Artist> array) {
         Scanner sc = new Scanner(System.in);
 
-        // display available artist
+        // Display available artists
         ArtistManagement.viewArtist();
-        
+
         // Capture user input for the artist ID
         System.out.print("Please enter the artist ID that you want to modify: ");
         String aIdInput = sc.nextLine();
@@ -211,7 +219,7 @@ public static void displayArtistScreen() {
         try {
             int aId = Integer.parseInt(aIdInput);
 
-            // Check whether the artist ID exists
+            // Find the artist with the given ID
             Artist selectedArtist = null;
             for (Artist artist : array) {
                 if (artist.getId() == aId) {
@@ -222,36 +230,37 @@ public static void displayArtistScreen() {
 
             if (selectedArtist == null) {
                 System.out.println("The artist with ID " + aId + " does not exist.");
-                return;
+                return; // Exit the method if the artist doesn't exist
             }
 
-            // Capture new artist name
-            System.out.print("Please enter new Artist Name: ");
-            String aName = sc.nextLine();
-
-            int aAge;
-
-            try {
-                // Capture new artist age
-                System.out.print("Please enter new Artist age: ");
-                aAge = sc.nextInt();
-                sc.nextLine(); // Consume the newline character
-
-                // Validation for age constraints
-                if (aAge <= 0 || aAge >= 100) {
-                    System.out.println("Invalid age input. Age must be between 1 and 99.");
-                    return; // Exit the method without updating the artist
+            String artistName;
+            do {
+                System.out.print("Please enter Artist Name: ");
+                artistName = sc.nextLine().trim();
+                if (artistName.isEmpty()) {
+                    System.out.println("Artist Name cannot be empty. Please try again.");
+                } else {
+                    if (!Validator.containsNonNumeric(artistName)) {
+                        System.out.println("Artist Name must contain at least one letter or non-numeric character. Please try again.");
+                        artistName = ""; // Reset artistName to trigger the loop again
+                    }
                 }
+            } while (artistName.isEmpty());
 
-                // Update artist details
-                selectedArtist.setName(aName);
-                selectedArtist.setAge(aAge);
+            // Update artist details
+            selectedArtist.setName(artistName);
 
-                System.out.println("Artist details updated successfully!");
-            } catch (InputMismatchException ex) {
-                System.out.println("Invalid input. Please enter a numeric value for age.");
-                sc.nextLine(); // Clear the input buffer
+            // Capture new band name
+            System.out.print("Please enter Band name (or leave it empty for no band): ");
+            String bandName = sc.nextLine().trim();
+
+            if (bandName.isEmpty()) {
+                bandName = null; // Set the bandName to null if it's empty
             }
+
+            selectedArtist.setBandName(bandName);
+
+            System.out.println("Artist details updated successfully!");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid artist ID.");
         }

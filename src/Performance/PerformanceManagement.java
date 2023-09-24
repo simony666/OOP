@@ -12,11 +12,16 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import util.ClearScreen;
+import util.Validator;
+import Artist.Artist;
+import Artist.ArtistManagement;
+
 public class PerformanceManagement{
     // performance and Artist array List
     //static ArrayList<Performance> array = new ArrayList<Performance>();
     static ArrayList<Performance> pfmArrayList = Performance.getPfmArrayList(); 
-    static ArrayList<Artist.Artist> artistArrayList = Artist.Artist.getArtistArrayList(); 
+    static ArrayList<Artist> artistArrayList = Artist.getArtistArrayList(); 
     
     // display performance screen
     public static void displayPerformanceScreen(){
@@ -39,7 +44,7 @@ public class PerformanceManagement{
                 String input = sc.nextLine();
 
                 // symbol checking
-                if (util.SymbolValidator.containsSymbol(input)){
+                if (util.Validator.containsSymbol(input)){
                     System.out.println("Input contains the specific symbols.");
                 }else{
                     int selection = Integer.parseInt(input);
@@ -48,27 +53,31 @@ public class PerformanceManagement{
 
                       // Add Performance
                         case 1:
-//                          System.out.println("Add performance");
+                            ClearScreen.cls();
                             addPerformance(artistArrayList,pfmArrayList);
                             break;
 
                         // View Performance   
                         case 2:
+                            ClearScreen.cls();
                             viewPerformance(artistArrayList,pfmArrayList);
                             break;
 
                         // Modify Performance
                         case 3:
+                            ClearScreen.cls();
                             updatePerformance(artistArrayList,pfmArrayList);
                             break;
 
                         // Remove Performance
                         case 4:
+                            ClearScreen.cls();
                             deletePerformance(pfmArrayList);
                             break;
 
                         // Back to Admin page     
                         case 5:
+                            ClearScreen.cls();
                             main.mainScreen.displayAdmin();
                             break;
 
@@ -92,7 +101,7 @@ public class PerformanceManagement{
     
     
     // add performance
-    public static void addPerformance(ArrayList<Artist.Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
+    public static void addPerformance(ArrayList<Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
         // initial the code
         Scanner sc = new Scanner(System.in);
 
@@ -102,18 +111,18 @@ public class PerformanceManagement{
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             System.out.println("!!! No artist added, please add an artist to view. !!!");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + "\n");
-            Artist.ArtistManagement.displayArtistScreen();
+            ArtistManagement.displayArtistScreen();
             return;
         }else{
             // Display available artists
-            Artist.ArtistManagement.viewArtist();
+            ArtistManagement.viewArtist();
         }
         // Capture user input for the artist ID
         System.out.print("Please enter the artist ID for the performance: ");
         String aId = sc.nextLine();
 
         // Check if the artist ID contains symbols
-        if (util.SymbolValidator.containsSymbol(aId)) {
+        if (Validator.containsSymbol(aId)) {
             System.out.println("Input contains specific symbols.");
             return;
         }
@@ -122,8 +131,8 @@ public class PerformanceManagement{
             int artistId = Integer.parseInt(aId);
 
             // Check whether the artist ID exists
-            Artist.Artist selectedArtist = null;
-            for (Artist.Artist artist : artistArrayList) {
+            Artist selectedArtist = null;
+            for (Artist artist : artistArrayList) {
                 if (artist.getId() == artistId) {
                     selectedArtist = artist;
                     break;
@@ -168,7 +177,7 @@ public class PerformanceManagement{
     }
 
     // view performance
-    public static void viewPerformance(ArrayList<Artist.Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
+    public static void viewPerformance(ArrayList<Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
         // Check if there are any performances in the list
         if (pfmArrayList.isEmpty()) {
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -188,13 +197,13 @@ public class PerformanceManagement{
 
         // Retrieve performance info from the arrayList
         for (Performance p : pfmArrayList) {
-            Artist.Artist artist = p.getArtist();
+            Artist artist = p.getArtist();
             System.out.printf("%-15s %-18s %-18s %-20s", p.getId(), p.getName(), p.getType(), artist.getName() + "\n");
         }
     }
 
      // Update performance
-    public static void updatePerformance(ArrayList<Artist.Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
+    public static void updatePerformance(ArrayList<Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
         Scanner sc = new Scanner(System.in);
 
         // Check if there are any performances in the list
@@ -259,7 +268,7 @@ public class PerformanceManagement{
             String pId = sc.nextLine();
 
             // check the artist id is it contains symbols
-            if (util.SymbolValidator.containsSymbol(pId)) {
+            if (util.Validator.containsSymbol(pId)) {
                 System.out.println("Input contains the specific symbols.");
             } else {
                 // check whether the artist ID exist

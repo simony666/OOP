@@ -1,6 +1,7 @@
 package Artist;
 
 import java.util.ArrayList;
+import util.Database;
 
 /**
  *
@@ -22,6 +23,7 @@ public class Artist extends util.Person {
     
     // no arg constructor
     public Artist(){
+        //getFromDatabase();
     };
     
     // Constructor with 4 parameters
@@ -77,7 +79,7 @@ public class Artist extends util.Person {
 //    }
    
     public static void setArtistArrayList(ArrayList<Artist> artistList) {
-        artistArrayList = artistList;
+        artistArrayList = artistList; // Assuming artistArrayList is a class variable
     }
-    
+
 }

@@ -1,8 +1,11 @@
 package main;
 
 import Artist.ArtistManagement;
-import util.SymbolValidator;
+import Performance.PerformanceManagement;
+import Schedule.ScheduleManagement;
+import util.Validator;
 import java.util.Scanner;
+import util.ClearScreen;
 
 /**
  *
@@ -14,7 +17,7 @@ public class mainScreen {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       
+       ClearScreen.cls();
        displayMainScreen();
         
     }
@@ -38,7 +41,7 @@ public class mainScreen {
             System.out.print("Please enter your selection: ");
             String input = sc.nextLine();
 
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains the specific symbols.");
             } else {
                 
@@ -48,11 +51,13 @@ public class mainScreen {
                 switch(selection){
                     // Admin login
                     case 1:
+                         ClearScreen.cls();
                          displayAdmin();
                          break;
 
                     // customer login      
                     case 2:
+                        ClearScreen.cls();
                         System.out.println("Welcome ???");
                         break;
                     
@@ -83,10 +88,11 @@ public static void displayAdmin(){
         System.out.println("=====================================");
         System.out.println("====== 1) Manage Artist        ======");
         System.out.println("====== 2) Manage Performance   ======");
-        System.out.println("====== 3) Manage Customer Seat ======");
-        System.out.println("====== 4) Manage Payment       ======");
-        System.out.println("====== 5) Manage Customer      ======");
-        System.out.println("====== 6) Back                 ======");
+        System.out.println("====== 3) Manage Schedule      ======");
+        System.out.println("====== 4) Manage Customer Seat ======");
+        System.out.println("====== 5) Manage Payment       ======");
+        System.out.println("====== 6) Manage Customer      ======");
+        System.out.println("====== 7) Back                 ======");
         System.out.println("====================================="+"\n");
     
         try{
@@ -95,7 +101,7 @@ public static void displayAdmin(){
             System.out.print("Please enter your selection: ");
             String input = sc.nextLine();
 
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains the specific symbols.");
             } else {
                 
@@ -106,35 +112,47 @@ public static void displayAdmin(){
 
                     // Manage Artist
                     case 1:
+                        ClearScreen.cls();
                          ArtistManagement.displayArtistScreen();
                          break;
 
                     // Manage Performance     
                     case 2:
-                        System.out.println("Manage Performance");
+                        ClearScreen.cls();
+                        PerformanceManagement.displayPerformanceScreen();
                         break;
 
-                    // Manage Customer Seat
+                    // Manage schedule
                     case 3:
+                        ClearScreen.cls();
+                        ScheduleManagement.displayScheduleScreen();
+                        break;
+                        
+                    // Manage Customer Seat
+                    case 4:
+                         ClearScreen.cls();
                          System.out.println("Manage Customer Seat");
                          break;
 
                     // Manage Payment
-                    case 4:
+                    case 5:
+                        ClearScreen.cls();
                          System.out.println("Manage Payment");
                          break;
 
                     // Manage Customer     
-                    case 5:
+                    case 6:
+                        ClearScreen.cls();
                          System.out.println("Manage Customer");
                          break;
 
                    // Back to main menu    
-                    case 6:
+                    case 7:
+                        ClearScreen.cls();
                         displayMainScreen();
                         break;
 
-                    // other than 1 to 3 input 
+                    // other than 1 to 7 input 
                     default:
                         System.out.println("Invalid Range, Please enter number between 1 to 6");
                         displayAdmin();

@@ -11,6 +11,7 @@ package Performance;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.List;
 
 import util.ClearScreen;
 import util.Validator;
@@ -19,9 +20,15 @@ import Artist.ArtistManagement;
 
 public class PerformanceManagement{
     // performance and Artist array List
-    //static ArrayList<Performance> array = new ArrayList<Performance>();
     static ArrayList<Performance> pfmArrayList = Performance.getPfmArrayList(); 
     static ArrayList<Artist> artistArrayList = Artist.getArtistArrayList(); 
+    private static List<PerformanceType> performanceTypes = new ArrayList<>();
+
+    static {
+        performanceTypes.add(new DancePerformance());
+        performanceTypes.add(new MusicPerformance());
+        performanceTypes.add(new PopPerformance());
+    }
     
     // display performance screen
     public static void displayPerformanceScreen(){
@@ -156,13 +163,34 @@ public class PerformanceManagement{
                 }
             } while (pfmName.isEmpty());
 
+            // Prompt the user to choose a performance type
+            boolean isValidType = false;
             do {
-                System.out.print("Please enter Performance type: ");
+                System.out.println("");
+                System.out.println("---------------------------------------------------------------------------------------");
+                System.out.println("Please choose a performance type from the following options:");
+                for (PerformanceType type : performanceTypes) {
+                    System.out.println(type.getTypeName());
+                }
+                System.out.print("Enter the selected performance type: ");
                 pfmType = sc.nextLine().trim();
+
                 if (pfmType.isEmpty()) {
                     System.out.println("Performance type cannot be empty. Please try again.");
+                } else {
+                    
+                    for (PerformanceType type : performanceTypes) {
+                        if (type.getTypeName().equalsIgnoreCase(pfmType)) {
+                            isValidType = true;
+                            break;
+                        }
+                    }
+                    if (!isValidType) {
+                        System.out.println("Invalid performance type. Please select from the available options.");
+                    }
                 }
-            } while (pfmType.isEmpty());
+            } while (pfmType.isEmpty() || !isValidType);
+
             
             
             // Create a new Performance instance

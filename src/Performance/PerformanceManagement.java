@@ -118,6 +118,7 @@ public class PerformanceManagement{
             ArtistManagement.viewArtist();
         }
         // Capture user input for the artist ID
+        System.out.println("");
         System.out.print("Please enter the artist ID for the performance: ");
         String aId = sc.nextLine();
 
@@ -192,13 +193,13 @@ public class PerformanceManagement{
         System.out.println("========================   Performance Lists  ========================");
         System.out.println("======================================================================" + "\n");
         System.out.println("**********************************************************************");
-        System.out.printf("%-15s %-18s %-18s %-20s", "Performance ID", "Performance Name",  "Performance Type","Artist Name");
+        System.out.printf("%-15s %-20s %-20s %-20s", "Performance ID", "Performance Name", "Performance Type", "Artist Name");
         System.out.println("\n" + "**********************************************************************");
 
         // Retrieve performance info from the arrayList
         for (Performance p : pfmArrayList) {
             Artist artist = p.getArtist();
-            System.out.printf("%-15s %-18s %-18s %-20s", p.getId(), p.getName(), p.getType(), artist.getName() + "\n");
+            System.out.printf("%s %20s %20s %20s", p.getId(), p.getName(), p.getType(), artist.getName() + "\n");
         }
     }
 
@@ -252,7 +253,7 @@ public class PerformanceManagement{
                 sc.nextLine(); // Clear the input buffer
             }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid artist ID.");
+            System.out.println("Invalid input. Please enter a valid performance ID.");
         }
     }
 

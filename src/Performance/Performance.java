@@ -11,9 +11,6 @@ package Performance;
 import java.util.ArrayList;
 import util.Database;
 import Artist.Artist;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class Performance {
     // Performance ArrayList
@@ -23,17 +20,7 @@ public class Performance {
     private int id;
     private String name;
     private String type;
-<<<<<<< Updated upstream
     private Artist artist;
-    private Database db = new Database('ip',user,pass,database);
-=======
-<<<<<<< Updated upstream
-    private Artist.Artist artist;
-=======
-    private Artist artist;
-    private Database db = new Database("C:/Users/User/OneDrive/ruyan/TAR UC/oop/oop assignment database/assignment database.db");
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 
     // Static field
     private static int nextId = 1;
@@ -83,37 +70,8 @@ public class Performance {
     public void setType(String type) {
         this.type = type;
     }
-
-<<<<<<< Updated upstream
     
-    // method:
-    // Static method to set the entire pfmArrayList
-    public static void setPfmArrayList(ArrayList<Performance> pfmList) {
-        pfmArrayList = pfmList;
-        
-        Connection conn = db.getConnection();
-        ResultSet result;
-        try {
-            result = db.runSql("select * from database");
-        } catch (SQLException ex) {
-            //connection fail
-        }
-        
-        while (result.next()){
-            //assume table got id,name,pass
-            String name = result.getString('Name');
-            String name = result.getString('Type');
-        }
-    }
-    
-<<<<<<< Updated upstream
     public void setArtist(Artist artist){
-=======
-    public void setArtist(Artist.Artist artist){
-=======
-    public void setArtist(Artist artist){
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         this.artist = artist;
     }
 

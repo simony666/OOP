@@ -1,6 +1,6 @@
 package Artist;
-
-import util.SymbolValidator;
+import util.ClearScreen;
+import util.Validator;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -40,7 +40,7 @@ public static void displayArtistScreen() {
         String input = sc.nextLine();
 
         // Symbol checking
-        if (SymbolValidator.containsSymbol(input)) {
+        if (Validator.containsSymbol(input)) {
             System.out.println("Input contains specific symbols.");
         } else {
             try {
@@ -48,18 +48,23 @@ public static void displayArtistScreen() {
 
                 switch (selection) {
                     case 1:
+                        ClearScreen.cls();
                         ArtistManagement.addArtist();
                         break;
                     case 2:
+                        ClearScreen.cls();
                         ArtistManagement.viewArtist(); 
                         break;
                     case 3:
+                        ClearScreen.cls();
                         updateArtist(artistList); // Pass the artistList
                         break;
                     case 4:
+                        ClearScreen.cls();
                         deleteArtist(artistList); // Pass the artistList
                         break;
                     case 5:
+                         ClearScreen.cls();
                          main.mainScreen.displayAdmin();
                         break;
                     case 6:
@@ -166,7 +171,7 @@ public static void displayArtistScreen() {
             String aId = sc.nextLine();
 
             // check the artist id is it contains symbols
-            if (SymbolValidator.containsSymbol(aId)) {
+            if (Validator.containsSymbol(aId)) {
                 System.out.println("Input contains the specific symbols.");
             } else {
                 // check whether the artist ID exist

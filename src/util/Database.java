@@ -2,6 +2,8 @@ package util;
 
 import Artist.Artist;
 import Performance.Performance;
+
+import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -81,10 +83,10 @@ public class Database {
             while (result.next()) {
                 int id = result.getInt("id");
                 String name = result.getString("name");
-                int age = result.getInt("age");
+                String bandName = result.getString("bandName");
                 
                 // Process the retrieved data here
-                Artist tempArtist = new Artist(name,age);
+                Artist tempArtist = new Artist(name,bandName);
                 tempList.add(tempArtist);
             }
             
@@ -94,6 +96,22 @@ public class Database {
         }
     }
     
+public static void insertArtist(String name, String bandName) {
+    String sql = "INSERT INTO Artist (name, bandName) VALUES (?, ?)";
+    
+    try (Connection connection = getConnection();
+         PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, bandName);
+        preparedStatement.executeUpdate();
+        System.out.println("Artist added successfully");
+    } catch (SQLException e) {
+        e.printStackTrace();
+        System.err.println("Error: Failed to insert artist into the database.");
+    }
+}
+
+
     private static void getPfm(){
         ArrayList<Performance> tempList = new ArrayList<>();
         String sqlText = "SELECT * FROM `Performance`;";

@@ -36,10 +36,24 @@ public class Config {
     public static boolean set(String key,String value){
         config.put(key, value);
         String data = "";
-        for (Map.Entry<String,String> entry:config.entrySet()){
-            data += entry.toString();
-            data += "\n";
+        
+        try{
+        Scanner scan = new Scanner(configFile);
+        while (scan.hasNextLine()){
+            String temp = scan.nextLine();
+            if(temp.equals("\n")){
+                data += "\n";
+            }else if (temp.startsWith("#")){
+                data += temp + "\n";
+            }else{
+                String[] tempkey = temp.split(":");
+                data += tempkey[0] + ":";
+                data += get(tempkey[0]) + "\n";
+            }
         }
+        }catch (FileNotFoundException ex){
+        }
+
         return writeToFile(data);
     }
     
@@ -48,7 +62,9 @@ public class Config {
             Scanner scan = new Scanner(configFile);
             while (scan.hasNextLine()){
                 String data = scan.nextLine();
-                if (!data.startsWith("#")){
+                if(data.equals("\n")){
+                    System.out.println("no data");
+                }else if (!data.startsWith("#")){
                     String[] key = data.split(":");
                     config.put(key[0], key[1]);
                 }

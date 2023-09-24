@@ -83,10 +83,11 @@ public static void displayAdmin(){
         System.out.println("=====================================");
         System.out.println("====== 1) Manage Artist        ======");
         System.out.println("====== 2) Manage Performance   ======");
-        System.out.println("====== 3) Manage Customer Seat ======");
-        System.out.println("====== 4) Manage Payment       ======");
-        System.out.println("====== 5) Manage Customer      ======");
-        System.out.println("====== 6) Back                 ======");
+        System.out.println("====== 3) Manage Schedule      ======");
+        System.out.println("====== 4) Manage Customer Seat ======");
+        System.out.println("====== 5) Manage Payment       ======");
+        System.out.println("====== 6) Manage Customer      ======");
+        System.out.println("====== 7) Back                 ======");
         System.out.println("====================================="+"\n");
     
         try{
@@ -111,30 +112,35 @@ public static void displayAdmin(){
 
                     // Manage Performance     
                     case 2:
-                        System.out.println("Manage Performance");
+                        Performance.PerformanceManagement.displayPerformanceScreen();
                         break;
 
-                    // Manage Customer Seat
+                    // Manage schedule
                     case 3:
+                        Schedule.ScheduleManagement.displayScheduleScreen();
+                        break;
+                        
+                    // Manage Customer Seat
+                    case 4:
                          System.out.println("Manage Customer Seat");
                          break;
 
                     // Manage Payment
-                    case 4:
+                    case 5:
                          System.out.println("Manage Payment");
                          break;
 
                     // Manage Customer     
-                    case 5:
+                    case 6:
                          System.out.println("Manage Customer");
                          break;
 
                    // Back to main menu    
-                    case 6:
+                    case 7:
                         displayMainScreen();
                         break;
 
-                    // other than 1 to 3 input 
+                    // other than 1 to 7 input 
                     default:
                         System.out.println("Invalid Range, Please enter number between 1 to 6");
                         displayAdmin();

@@ -33,7 +33,7 @@ public class Schedule {
 
     // Schedule ArrayList
     private static ArrayList<Schedule> scheduleArrayList = new ArrayList<Schedule>();
-    private static Database db = new Database("C:/Users/User/OneDrive/ruyan/TAR UC/oop/oop assignment database/assignment database.db");
+    //private static Database db = new Database("C:/Users/User/OneDrive/ruyan/TAR UC/oop/oop assignment database/assignment database.db");
 
     // constructor
     public Schedule() {

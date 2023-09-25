@@ -2,6 +2,8 @@ package util;
 
 import Artist.Artist;
 import Performance.Performance;
+
+import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -26,10 +28,11 @@ public class Database {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(dbUrl, config.get("dbUser"), config.get("dbPass"));
         } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
         }
         
         getArtist();
-        getPfm();
+        //getPfm();
     }
     
     private void closeConn(){
@@ -45,16 +48,30 @@ public class Database {
         return conn;
     }
     
-    private static ResultSet runSql(String sqlText){
+    private static ResultSet runQuery(String sqlText){
         ResultSet resultSet = null;
 
         try {
             Statement statement = conn.createStatement();
             resultSet = statement.executeQuery(sqlText);
         } catch (SQLException ex){
+            ex.printStackTrace();
         }
 
         return resultSet;
+    }
+    
+    private static int runUpdate(String sqlText){
+        int sucess = 0;
+
+        try {
+            Statement statement = conn.createStatement();
+            sucess = statement.executeUpdate(sqlText);
+        } catch (SQLException ex){
+            ex.printStackTrace();
+        }
+
+        return sucess;
     }
 
     public static ArrayList<Artist> getArtistList() {
@@ -76,28 +93,35 @@ public class Database {
     private static void getArtist(){
         ArrayList<Artist> tempList = new ArrayList<>();
         String sqlText = "SELECT * FROM `Artist`;";
-        ResultSet result = runSql(sqlText);
+        ResultSet result = runQuery(sqlText);
         try {
             while (result.next()) {
                 int id = result.getInt("id");
                 String name = result.getString("name");
-                int age = result.getInt("age");
+                String bandName = result.getString("bandName");
                 
                 // Process the retrieved data here
-                Artist tempArtist = new Artist(name,age);
+                Artist tempArtist = new Artist(name,bandName);
                 tempList.add(tempArtist);
             }
             
             Database.artistList = tempList;
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
     }
     
+public static void insertArtist(String name, String bandName) {
+    String sql = "INSERT INTO `Artist` (`name`, `bandName`) VALUES (\""+name+"\", \""+bandName+"\");";
+    int result = runUpdate(sql);
+    System.out.println(String.valueOf(result));
+}
+
+
     private static void getPfm(){
         ArrayList<Performance> tempList = new ArrayList<>();
         String sqlText = "SELECT * FROM `Performance`;";
-        ResultSet result = runSql(sqlText);
+        ResultSet result = runQuery(sqlText);
         try {
             while (result.next()) {
                 int id = result.getInt("id");
@@ -111,7 +135,7 @@ public class Database {
             
             Database.pfmList = tempList;
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
     }
 }

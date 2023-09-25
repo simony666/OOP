@@ -102,7 +102,7 @@ public class Database {
                 String bandName = result.getString("bandName");
                 
                 // Process the retrieved data here
-                Artist tempArtist = new Artist(name,bandName);
+                Artist tempArtist = new Artist(id,name,bandName);
                 tempList.add(tempArtist);
             }
             
@@ -114,8 +114,8 @@ public class Database {
     
     public static void insertArtist(String name, String bandName) {
         String sql = "INSERT INTO `Artist` (`name`, `bandName`) VALUES (\""+name+"\", \""+bandName+"\");";
-        int result = runUpdate(sql);
-        System.out.println(String.valueOf(result));
+        runUpdate(sql);
+        
     }
 
     public static void updateArtist(int Id, String newName, String newBandName) {

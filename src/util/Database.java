@@ -19,8 +19,8 @@ public class Database {
     private static Connection conn;
     private Config config = new Config();
     
-    private static ArrayList<Artist> artistList = new ArrayList<>();
-    private static ArrayList<Performance> pfmList = new ArrayList<>();
+    public static ArrayList<Artist> artistList = new ArrayList<>();
+    public static ArrayList<Performance> pfmList = new ArrayList<>();
     
     public Database(){       
         String dbUrl = "jdbc:mysql://" + config.get("dbHost") + "/" + config.get("dbName");
@@ -90,7 +90,8 @@ public class Database {
         Database.pfmList = pfmArrayList;
     }
     
-    private static void getArtist(){
+    // Artist
+    public static void getArtist(){
         ArrayList<Artist> tempList = new ArrayList<>();
         String sqlText = "SELECT * FROM `Artist`;";
         ResultSet result = runQuery(sqlText);
@@ -111,13 +112,26 @@ public class Database {
         }
     }
     
-public static void insertArtist(String name, String bandName) {
-    String sql = "INSERT INTO `Artist` (`name`, `bandName`) VALUES (\""+name+"\", \""+bandName+"\");";
-    int result = runUpdate(sql);
-    System.out.println(String.valueOf(result));
-}
+    public static void insertArtist(String name, String bandName) {
+        String sql = "INSERT INTO `Artist` (`name`, `bandName`) VALUES (\""+name+"\", \""+bandName+"\");";
+        int result = runUpdate(sql);
+        System.out.println(String.valueOf(result));
+    }
 
+    public static void updateArtist(int Id, String newName, String newBandName) {
+        String sql = "UPDATE `Artist` SET `name` = \"" + newName + "\", `bandName` = \"" + newBandName + 
+                "\" WHERE `Id` = " + Id + ";";
 
+        runUpdate(sql);
+    }
+
+    public static void deleteArtist(String Id) {
+        String sql = "DELETE FROM `Artist` WHERE `Id` = " + Id + ";";
+        runUpdate(sql);
+    }
+    
+    
+    // Performance
     private static void getPfm(){
         ArrayList<Performance> tempList = new ArrayList<>();
         String sqlText = "SELECT * FROM `Performance`;";

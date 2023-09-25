@@ -16,4 +16,11 @@ public class Validator {
     public static boolean isInputEmpty(String text) {
         return text.trim().isEmpty();
     }
+    
+    public static boolean containsNonNumeric(String input) {
+    // Use a regex pattern to check if the input contains at least one letter or non-numeric character
+    Pattern pattern = Pattern.compile("[a-zA-Z\\W]");
+    Matcher matcher = pattern.matcher(input);
+    return matcher.find();
+}
 }

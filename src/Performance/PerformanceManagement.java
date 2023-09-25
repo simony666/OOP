@@ -15,6 +15,7 @@ import java.util.List;
 
 import util.ClearScreen;
 import util.Validator;
+import util.Database;
 import Artist.Artist;
 import Artist.ArtistManagement;
 
@@ -259,7 +260,7 @@ public class PerformanceManagement{
                 return;
             }
 
-            // Capture new artist name
+            // Capture new performance name
             String pfmName;
 
             try {
@@ -272,14 +273,44 @@ public class PerformanceManagement{
                 }
             } while (pfmName.isEmpty());
                 
-
                 // Update artist details
-                selectedPfm.setName(pfmName);
+             selectedPfm.setName(pfmName);
+                
+             String pfmType;
+            // Prompt the user to choose a performance type
+            boolean isValidType = false;
+            do {
+                System.out.println("");
+                System.out.println("---------------------------------------------------------------------------------------");
+                System.out.println("Please choose a performance type from the following options:");
+                for (PerformanceType type : performanceTypes) {
+                    System.out.println(type.getTypeName());
+                }
+                System.out.print("Enter the selected performance type: ");
+                pfmType = sc.nextLine().trim();
+
+                if (pfmType.isEmpty()) {
+                    System.out.println("Performance type cannot be empty. Please try again.");
+                } else {
+                    
+                    for (PerformanceType type : performanceTypes) {
+                        if (type.getTypeName().equalsIgnoreCase(pfmType)) {
+                            isValidType = true;
+                            break;
+                        }
+                    }
+                    if (!isValidType) {
+                        System.out.println("Invalid performance type. Please select from the available options.");
+                    }
+                }
+            } while (pfmType.isEmpty() || !isValidType);
+               Database.updatePerformance(pId, pfmName, pfmType);
                 System.out.println("Performance details updated successfully!");
             } catch (InputMismatchException ex) {
                 System.out.println("Invalid input. Please enter a numeric value for age.");
                 sc.nextLine(); // Clear the input buffer
             }
+            
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid performance ID.");
         }

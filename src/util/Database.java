@@ -106,6 +106,7 @@ public class Database {
         }
     }
     
+    // Performance
     private static void getPfm(){
         ArrayList<Performance> tempList = new ArrayList<>();
         String sqlText = "SELECT * FROM `Performance`;";
@@ -117,13 +118,27 @@ public class Database {
                 String type = result.getString("type");
                 
                 // Process the retrieved data here
-                Performance tempPfm = new Performance(name,type);
+                Performance tempPfm = new Performance(id,name,type);
                 tempList.add(tempPfm);
             }
             
             Database.pfmList = tempList;
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
     }
+    
+    
+    public static void updatePerformance(int Id, String newName, String newType) {
+        String sql = "UPDATE `Artist` SET `performanceName` = \"" + newName + "\", `performanceType` = \"" + newType + 
+                "\" WHERE `Id` = " + Id + ";";
+        runUpdate(sql);
+    }
+
+    
+    public static void deletePerformance(int Id) {
+        String sql = "DELETE FROM `Performance` WHERE `Id` = " + Id + ";";
+        runUpdate(sql);
+    }
+
 }

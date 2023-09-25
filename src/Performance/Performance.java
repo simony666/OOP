@@ -23,11 +23,11 @@ public class Performance {
     private Artist artist;
 
     // Static field
-    private static int nextId = 1;
+    //private static int nextId = 1;
 
     // Constructors
     public Performance() {
-        this.id = nextId++;
+        //this.id = nextId++;
     }
 
     public Performance(String name, String type) {
@@ -36,14 +36,21 @@ public class Performance {
         this.type = type;
     }
 
+    public Performance(int id, String name, String type) {
+        this();
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
+    
     // Getters
     public int getId() {
         return id;
     }
 
-    public static int getNextId() {
-        return nextId;
-    }
+//    public static int getNextId() {
+//        return nextId;
+//    }
 
     public String getName() {
         return name;
@@ -81,19 +88,6 @@ public class Performance {
     public void setPfmArrayList(ArrayList<Performance> pfmList) {
         pfmArrayList = pfmList;
         
-//        Connection conn = db.getConnection();
-//        ResultSet result;
-//        try {
-//            result = db.runSql("select * from database");
-//        } catch (SQLException ex) {
-//            //connection fail
-//        }
-//        
-//        while (result.next()){
-//            //assume table got id,name,pass
-//            String name = result.getString('Name');
-//            String name = result.getString('Type');
-//        }
     }
     
     

@@ -14,6 +14,7 @@ import Artist.Artist;
 
 public class Performance {
     // Performance ArrayList
+    private static ArrayList<Artist> artistList = Database.artistList;
     private static ArrayList<Performance> pfmArrayList = new ArrayList<Performance>();
 
     // Non-static fields
@@ -21,27 +22,56 @@ public class Performance {
     private String name;
     private String type;
     private Artist artist;
+    private int artistId;
+    private String artistName;
+    public static ArrayList<Artist> getArtistList() {
+        return artistList;
+        //this.id = nextId++;
+    }
+
+    public static void setArtistList(ArrayList<Artist> artistList) {
+        Performance.artistList = artistList;
+    }
+
+    public int getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(int artistId) {
+        this.artistId = artistId;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
 
     // Static field
-    //private static int nextId = 1;
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
 
+    //private static int nextId = 1;
     // Constructors
     public Performance() {
-        //this.id = nextId++;
     }
 
     public Performance(String name, String type) {
         this();
         this.name = name;
         this.type = type;
+        
     }
 
-    public Performance(int id, String name, String type) {
-        this();
+    public Performance(int id, String name, String type, int artistId, String artistName) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.artistId = artistId;
+        this.artistName = artistName;
+        this.artist = getArtistById(artistId); // Use getArtistById to retrieve the Artist object
     }
+
+
     
     // Getters
     public int getId() {
@@ -95,5 +125,17 @@ public class Performance {
     public static void addPerformance(String name, String type) {
         Performance performance = new Performance(name,type);
         pfmArrayList.add(performance);
+    }
+    
+    public Artist getArtistById(int artistId) {
+        // Implement logic to fetch an Artist object from the Artist list using artistId
+        // Return the Artist object or null if not found
+        for (Artist a : artistList) {
+            if (a.getId() == artistId) {
+                return a; // Return the Artist object
+            }
+        }
+        // If artist with the given ID is not found, return null
+        return null;
     }
 }

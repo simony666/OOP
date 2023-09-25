@@ -21,8 +21,8 @@ import Artist.ArtistManagement;
 
 public class PerformanceManagement{
     // performance and Artist array List
-    static ArrayList<Performance> pfmArrayList = Performance.getPfmArrayList(); 
-    static ArrayList<Artist> artistArrayList = Artist.getArtistArrayList(); 
+    static ArrayList<Performance> pfmArrayList = Database.pfmList; 
+    static ArrayList<Artist> artistArrayList = Database.artistList;
     private static List<PerformanceType> performanceTypes = new ArrayList<>();
 
     static {
@@ -108,23 +108,23 @@ public class PerformanceManagement{
     }     
     
     
-    // add performance
+    // Add performance
     public static void addPerformance(ArrayList<Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
-        // initial the code
+        // Initialize the code
         Scanner sc = new Scanner(System.in);
 
-        
         // Check if there are any performances in the list
         if (artistArrayList.isEmpty()) {
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("!!! No artist added, please add an artist to view. !!!");
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + "\n");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("!!! No artists have been added. Please add an artist to view performances. !!!");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + "\n");
             ArtistManagement.displayArtistScreen();
             return;
-        }else{
+        } else {
             // Display available artists
             ArtistManagement.viewArtist();
         }
+
         // Capture user input for the artist ID
         System.out.println("");
         System.out.print("Please enter the artist ID for the performance: ");
@@ -154,10 +154,9 @@ public class PerformanceManagement{
             }
 
             // Capture additional performance details
-            // perforance name
-            String pfmName,pfmType;
+            String pfmName, pfmType;
             do {
-                System.out.print("Please enter Performance name: ");
+                System.out.print("Please enter the performance name: ");
                 pfmName = sc.nextLine().trim();
                 if (pfmName.isEmpty()) {
                     System.out.println("Performance Name cannot be empty. Please try again.");
@@ -168,18 +167,20 @@ public class PerformanceManagement{
             boolean isValidType = false;
             do {
                 System.out.println("");
-                System.out.println("---------------------------------------------------------------------------------------");
+                System.out.println("--------------------------------------------------------------");
                 System.out.println("Please choose a performance type from the following options:");
+                System.out.println("--------------------------------------------------------------");
                 for (PerformanceType type : performanceTypes) {
                     System.out.println(type.getTypeName());
                 }
+                System.out.println("");
                 System.out.print("Enter the selected performance type: ");
                 pfmType = sc.nextLine().trim();
 
                 if (pfmType.isEmpty()) {
                     System.out.println("Performance type cannot be empty. Please try again.");
                 } else {
-                    
+
                     for (PerformanceType type : performanceTypes) {
                         if (type.getTypeName().equalsIgnoreCase(pfmType)) {
                             isValidType = true;
@@ -192,14 +193,15 @@ public class PerformanceManagement{
                 }
             } while (pfmType.isEmpty() || !isValidType);
 
-            
-            
             // Create a new Performance instance
-            Performance p = new Performance(pfmName,pfmType);
+            Performance p = new Performance(pfmName, pfmType);
             p.setArtist(selectedArtist);
 
-            // Add the selected Artist to performance Array List
+            // Add the selected Artist to the performance ArrayList
             pfmArrayList.add(p);
+
+            // Insert performance into the database
+            Database.insertPerformance(pfmName, pfmType, artistId);
             System.out.println("Performance added successfully");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a numeric value for the artist ID.");
@@ -208,6 +210,8 @@ public class PerformanceManagement{
 
     // view performance
     public static void viewPerformance(ArrayList<Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
+        
+        try {
         // Check if there are any performances in the list
         if (pfmArrayList.isEmpty()) {
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -217,28 +221,34 @@ public class PerformanceManagement{
             return;
         }
 
-        // Display the heading
-        System.out.println("\n" + "======================================================================");
-        System.out.println("========================   Performance Lists  ========================");
-        System.out.println("======================================================================" + "\n");
-        System.out.println("**********************************************************************");
-        System.out.printf("%-15s %-20s %-20s %-20s", "Performance ID", "Performance Name", "Performance Type", "Artist Name");
-        System.out.println("\n" + "**********************************************************************");
+            // Display the heading
+            System.out.println("\n" + "======================================================================");
+            System.out.println("========================   Performance Lists  ========================");
+            System.out.println("======================================================================" + "\n");
+            System.out.println("**********************************************************************");
+            System.out.printf("%-15s %-20s %-20s %-20s", "Performance ID", "Performance Name", "Performance Type", "Artist Name");
+            System.out.println("\n" + "**********************************************************************");
 
-        // Retrieve performance info from the arrayList
-        for (Performance p : pfmArrayList) {
-            Artist artist = p.getArtist();
-            System.out.printf("%s %20s %20s %20s", p.getId(), p.getName(), p.getType(), artist.getName() + "\n");
+
+            // Retrieve performance info from the arrayList
+            for (Performance p : pfmArrayList) {
+                Artist artist = p.getArtist();
+                System.out.printf("%s %23s %20s %20s", p.getId(), p.getName(), p.getType(), artist.getName() + "\n");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Print the exception details for debugging
+            System.out.println("An error occurred while trying to view performances.");
         }
     }
 
-     // Update performance
+    // Update performance
     public static void updatePerformance(ArrayList<Artist> artistArrayList, ArrayList<Performance> pfmArrayList) {
         Scanner sc = new Scanner(System.in);
 
         // Check if there are any performances in the list
         PerformanceManagement.viewPerformance(artistArrayList, pfmArrayList);
-        
+
         // Capture user input for the performance ID
         System.out.print("\nPlease enter the performance ID that you want to modify: ");
         String pIdInput = sc.nextLine();
@@ -246,7 +256,7 @@ public class PerformanceManagement{
         try {
             int pId = Integer.parseInt(pIdInput);
 
-            // Check whether the artist ID exists
+            // Check whether the performance ID exists
             Performance selectedPfm = null;
             for (Performance p : pfmArrayList) {
                 if (p.getId() == pId) {
@@ -262,27 +272,23 @@ public class PerformanceManagement{
 
             // Capture new performance name
             String pfmName;
-
-            try {
-                // sc.nextLine(); // Consume the newline character
-                do {
+            do {
                 System.out.print("Please enter Performance name: ");
                 pfmName = sc.nextLine().trim();
                 if (pfmName.isEmpty()) {
                     System.out.println("Performance Name cannot be empty. Please try again.");
                 }
             } while (pfmName.isEmpty());
-                
-                // Update artist details
-             selectedPfm.setName(pfmName);
-                
-             String pfmType;
+
             // Prompt the user to choose a performance type
             boolean isValidType = false;
+            String pfmType = "";
+
             do {
                 System.out.println("");
-                System.out.println("---------------------------------------------------------------------------------------");
+                System.out.println("--------------------------------------------------------------");
                 System.out.println("Please choose a performance type from the following options:");
+                System.out.println("--------------------------------------------------------------");
                 for (PerformanceType type : performanceTypes) {
                     System.out.println(type.getTypeName());
                 }
@@ -292,29 +298,75 @@ public class PerformanceManagement{
                 if (pfmType.isEmpty()) {
                     System.out.println("Performance type cannot be empty. Please try again.");
                 } else {
-                    
+                    boolean typeExists = false;
                     for (PerformanceType type : performanceTypes) {
                         if (type.getTypeName().equalsIgnoreCase(pfmType)) {
-                            isValidType = true;
+                            typeExists = true;
                             break;
                         }
                     }
-                    if (!isValidType) {
+                    if (!typeExists) {
                         System.out.println("Invalid performance type. Please select from the available options.");
+                    } else {
+                        isValidType = true;
                     }
                 }
-            } while (pfmType.isEmpty() || !isValidType);
-               Database.updatePerformance(pId, pfmName, pfmType);
-                System.out.println("Performance details updated successfully!");
-            } catch (InputMismatchException ex) {
-                System.out.println("Invalid input. Please enter a numeric value for age.");
-                sc.nextLine(); // Clear the input buffer
+            } while (!isValidType);
+
+            // Capture user input for the artist ID
+            int artistId = -1;
+            String artistName = null; // Initialize artistName
+
+            while (true) {
+                ArtistManagement.viewArtist();
+                System.out.println("");
+                System.out.print("Please enter the artist ID for the performance: ");
+                String aId = sc.nextLine();
+
+                // Check if the artist ID contains symbols
+                if (Validator.containsSymbol(aId)) {
+                    System.out.println("Input contains specific symbols.");
+                    continue; // Re-enter the artist ID
+                }
+
+                try {
+                    artistId = Integer.parseInt(aId);
+
+                    // Retrieve the artist's name based on artistId
+                    Artist selectedArtist = null;
+                    for (Artist artist : artistArrayList) {
+                        if (artist.getId() == artistId) {
+                            selectedArtist = artist;
+                            artistName = selectedArtist.getName(); // Get the artist's name
+                            break;
+                        }
+                    }
+
+                    if (selectedArtist == null) {
+                        System.out.println("The artist with ID " + artistId + " does not exist.");
+                    } else {
+                        // If artist ID is valid, break the loop
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a numeric value for the artist ID.");
+                }
             }
-            
+
+            // Update the selected performance details
+            selectedPfm.setName(pfmName);
+            selectedPfm.setType(pfmType);
+            selectedPfm.setArtistId(artistId);
+
+            // Update the performance in the database
+            Database.updatePerformance(pId, pfmName, pfmType, artistName,artistId);
+            System.out.println("Performance details updated successfully!");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid performance ID.");
         }
     }
+
+
 
     // delete performance
     public static void deletePerformance(ArrayList<Performance> pfmArrayList) {
@@ -324,6 +376,7 @@ public class PerformanceManagement{
 
         try {
             PerformanceManagement.viewPerformance(artistArrayList, pfmArrayList);
+            System.out.println("");
             System.out.print("Please enter the performance ID that you want to delete: ");
             String pId = sc.nextLine();
 
@@ -344,8 +397,10 @@ public class PerformanceManagement{
 
                 if (index == -1) {
                     System.out.println("The performance ID is not available. Please try it again");
+                    
                 } else {
                     pfmArrayList.remove(index);
+                    Database.deletePerformance(pId);
                     System.out.println("Remove performance's ID successfully");
                 }
             }

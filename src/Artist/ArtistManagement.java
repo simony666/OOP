@@ -136,9 +136,6 @@ public class ArtistManagement {
     }
 
 
-
-
-
     // view artist
     public static void viewArtist() {
         // Call the method to retrieve data from the database
@@ -229,7 +226,7 @@ public class ArtistManagement {
 
         try {
             int aId = Integer.parseInt(aIdInput);
-            System.out.println(String.valueOf(aId));
+            //System.out.println(String.valueOf(aId));
 
             // Find the artist with the given ID
             Artist selectedArtist = null;

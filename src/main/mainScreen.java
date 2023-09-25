@@ -20,8 +20,8 @@ public class mainScreen {
     public static void main(String[] args) {
          Database database = new Database();
         ClearScreen.cls();
-        //ArtistManagement.displayArtistScreen();
-        displayMainScreen();
+        PerformanceManagement.displayPerformanceScreen();
+        //displayMainScreen();
         
     }
     

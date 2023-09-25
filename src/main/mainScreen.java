@@ -131,7 +131,7 @@ public static void displayAdmin(){
                     // Manage Customer Seat
                     case 4:
                          ClearScreen.cls();
-                         System.out.println("Manage Customer Seat");
+                         Seat.SeatManager.displaySeatMainScreen();
                          break;
 
                     // Manage Payment

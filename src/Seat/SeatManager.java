@@ -2,6 +2,7 @@ package Seat;
 
 import Seat.Venue;
 import Seat.Seat;
+import Seat.Ticket;
 import java.util.ArrayList;
 import java.util.Scanner;
 import util.ClearScreen;
@@ -61,7 +62,7 @@ public class SeatManager {
                             displayVenueScreen(); 
                             break;
                         case 3:
-                            //displaySeatScreen();
+                            displayTicketScreen();
                             break;
                         case 4:
                             main.mainScreen.displayAdmin();
@@ -224,10 +225,10 @@ public class SeatManager {
                             break;
                         case 2:
                             Ticket.viewAllTicket();
-                            SeatManager.displayVenueScreen();
+                            SeatManager.displayTicketScreen();
                             break;
                         case 3:
-                            Venue.deleteTicket(ticketList);
+                            Ticket.deleteTicket(ticketList);
                             break;
                         case 4:
                             displaySeatMainScreen();

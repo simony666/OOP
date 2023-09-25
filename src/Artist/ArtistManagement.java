@@ -256,5 +256,4 @@ public static void displayArtistScreen() {
             System.out.println("Invalid input. Please enter a valid artist ID.");
         }
     }
-
 }

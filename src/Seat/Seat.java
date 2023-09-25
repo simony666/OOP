@@ -19,10 +19,7 @@ import java.util.Scanner;
  * @author User
  */
 public class Seat {
-
-    static void existSeat(String InSeatID) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
     private String SeatID;
     private String venue;
     private double price;
@@ -149,29 +146,7 @@ public class Seat {
             InPrice = -1;
             return null; // Return null to indicate an error
         }
-        
-        //let user input the status and verify
-//        try {
-//            System.out.print("Please enter status(1 for available, 2 for unavaialable): ");
-//            InStatus = sc.nextInt();
-//            sc.nextLine(); // Consume the newline character
-//
-//            if (InStatus != 1 || InStatus != 2) {
-//                throw new IllegalArgumentException("Invalid status(1 for available, 2 for unavaialable)");
-//            }
-//        } catch (IllegalArgumentException e) {
-//            if (e.getMessage().equals("Invalid status")) {
-//                System.out.println("Invalid status input. Please try again");
-//                return null; // Return null to indicate an error
-//            }
-//            
-//            InStatus = 0;
-//        } catch (InputMismatchException ex) {
-//            System.out.println("Invalid input. Please enter a value.");
-//            sc.nextLine();
-//            InStatus = -1;
-//            return null; // Return null to indicate an error
-//        }
+       
 
         // Create the temporary list for store Venue
         Seat SList = new Seat(InSeat, InVenue, InPrice, InStatus);
@@ -185,7 +160,7 @@ public class Seat {
         
         
     
-    //View all venue
+    //View all venue mothod
     public static void viewAllSeat() {
         if (seatArrayList.isEmpty()) {
             System.out.println("============:   No seat found   :============" + "\n\n");
@@ -203,6 +178,8 @@ public class Seat {
         }
     }
     
+    
+    //Modify seat mothod
     public static void modifySeat(){
         Scanner sc = new Scanner(System.in);
 
@@ -227,6 +204,7 @@ public class Seat {
         } else {
             // Seat found, allow modifications
             System.out.println("Current Venue Details:");
+            System.out.println("Seat ID: " + seatArrayList.get(index).getSeatID());
             System.out.println("Venue ID: " + seatArrayList.get(index).getVenue());
             System.out.println("Location: " + seatArrayList.get(index).getPrice());
             System.out.println("Capacity: " + seatArrayList.get(index).getStatus());
@@ -246,7 +224,7 @@ public class Seat {
 
             // If the user wants to change the Seat ID, update it
             if (!newSeatID.isEmpty()) {
-                seatArrayList.get(index).setSeatID(newSeatID);
+                
             }
 
             System.out.print("Enter new Venue (press Enter to keep current): ");
@@ -275,7 +253,7 @@ public class Seat {
             if (!newStatusStr.isEmpty()) {
                 try {
                     int newStatus = Integer.parseInt(newStatusStr);
-                    if (newStatus > 0 || 3 < newStatus) {
+                    if (newStatus < 0 || 3 > newStatus) {
                         seatArrayList.get(index).setStatus(newStatus);
                         System.out.println("Seat details modified successfully.");
                     } else {
@@ -285,11 +263,12 @@ public class Seat {
                     System.out.println("Invalid input. Please enter a numeric value for status.");
                 }
             }
+            
         }   
     }
 
     
-    
+    //Delete seat method
     public static void deleteSeat(ArrayList<Seat> seatArrayList) {
         Scanner sc = new Scanner(System.in);
 
@@ -318,27 +297,51 @@ public class Seat {
             System.out.println("Invalid input. Please enter a value.");
         }
     }
-    
-    
-    public static Seat existSeat(String SeatID){
+        
+    //Find seat ID existing in database or not
+    public static Seat existSeat(String targetSeatID){
         for (Seat seat : seatArrayList) {
-            if (seat.getSeatID().equals(SeatID)) {
-            
+            if (seat.getSeatID().equals(targetSeatID)) {
                 return seat; // Return the Seat object when a matching SeatID is found.
             }
         }
         return null; // Return null if no matching SeatID is found.
     }
     
-    
+    //Get the releated seatID's price
     public static double getSeatPrice(String SeatID, double Price){
         double price;
         for (int i = 0; i < seatArrayList.size(); i++){
             Seat seat = seatArrayList.get(i);
+            if(seat.getSeatID().equals(SeatID)){
             price = seat.getPrice();
                  
             return price; // Return the Seat object when a matching SeatID is found.
             }
+        }
         return 0;
     }
+    
+    
+    //Check the related seatID's status (Is 1 or 2)
+    public static boolean checkStatus(String targetSeatID) {
+        for (int i = 0; i < seatArrayList.size(); i++) {
+            if (seatArrayList.get(i).getSeatID().equals(targetSeatID)) {
+                if (seatArrayList.get(i).getStatus() == 1){       
+                return true;
+                }
+            } 
+        }
+        return false;
+    }
+
+    //CChange the status for seatID when ticket ........................
+//    public static void changeStatus(String targetSeatID){
+//        //change status to 2 when new ticket
+//        for (int i = 0; i < seatArrayList.size(); i++) {
+//            if (seatArrayList.get(i).getSeatID().equals(targetSeatID)) {
+//                seatArrayList.get(i).setStatus(2);    
+//            }
+//        }
+//    }
 }

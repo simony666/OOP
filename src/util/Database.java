@@ -20,24 +20,12 @@ public class Database {
     private static ArrayList<Artist> artistList = new ArrayList<>();
     private static ArrayList<Performance> pfmList = new ArrayList<>();
     
-    public Database(){ 
-        String database = config.get("database");
-        if (database.equals("mysql")){
-            //mysql
-            
-            String dbUrl = "jdbc:mysql://" + config.get("dbHost") + "/" + config.get("dbName");
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                conn = DriverManager.getConnection(dbUrl, config.get("dbUser"), config.get("dbPass"));
-            } catch (ClassNotFoundException | SQLException e) {
-            }
-        }else if (database.equals("sqlite")){
-            //sqlite
-            try {
-                Class.forName("org.sqlite.JDBC");
-                conn = DriverManager.getConnection("jdbc:sqlite:" + config.get("sqliteFilePath"));
-            } catch (ClassNotFoundException | SQLException e) {
-            }
+    public Database(){       
+        String dbUrl = "jdbc:mysql://" + config.get("dbHost") + "/" + config.get("dbName");
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(dbUrl, config.get("dbUser"), config.get("dbPass"));
+        } catch (ClassNotFoundException | SQLException e) {
         }
         
         getArtist();

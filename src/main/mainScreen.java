@@ -3,6 +3,7 @@ package main;
 import Artist.ArtistManagement;
 import Performance.PerformanceManagement;
 import Schedule.ScheduleManagement;
+import Staff.StaffManager;
 import util.Validator;
 import java.util.Scanner;
 import util.ClearScreen;
@@ -83,6 +84,9 @@ public class mainScreen {
 }
     
 public static void displayAdmin(){
+    if(!StaffManager.staffEnter()){
+        return;
+    }
         
     do{
          // Main login screen

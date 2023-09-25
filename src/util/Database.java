@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import javax.lang.model.util.Types;
 
 /**
  *
@@ -91,34 +92,95 @@ public class Database {
     }
     
     // Artist
-    public static void getArtist(){
-        ArrayList<Artist> tempList = new ArrayList<>();
-        String sqlText = "SELECT * FROM `Artist`;";
-        ResultSet result = runQuery(sqlText);
+   public static void getArtist() {
+    ArrayList<Artist> tempList = new ArrayList<>();
+    String sqlText = "SELECT * FROM `Artist`;";
+    ResultSet result = runQuery(sqlText);
+    try {
+        while (result.next()) {
+            int id = result.getInt("id");
+            String name = result.getString("name");
+            String bandName = result.getString("bandName");
+
+            // Process the retrieved data here
+            Artist tempArtist = new Artist(id, name, bandName);
+            tempList.add(tempArtist);
+        }
+
+        Database.artistList = tempList;
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+}
+
+    
+    
+    public static boolean insertArtist(String name, String bandName) {
+        if (artistNameExists(name)) {
+            System.out.println("Artist with the same name already exists in the database.");
+            return false; // Don't insert if the name already exists
+        }
+
+        String sql = "INSERT INTO `Artist` (`name`, `bandName`) VALUES (?, ?);";
         try {
-            while (result.next()) {
-                int id = result.getInt("id");
-                String name = result.getString("name");
-                String bandName = result.getString("bandName");
-                
-                // Process the retrieved data here
-                Artist tempArtist = new Artist(id,name,bandName);
-                tempList.add(tempArtist);
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+
+            // Conditionally set bandName to null if it's empty
+            if (bandName.isEmpty()) {
+                preparedStatement.setNull(2, java.sql.Types.VARCHAR); // Set bandName to NULL
+            } else {
+                preparedStatement.setString(2, bandName); // Set bandName to the provided value
             }
-            
-            Database.artistList = tempList;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+
+            int rowsInserted = preparedStatement.executeUpdate();
+
+            if (rowsInserted > 0) {
+                //System.out.println("Artist added successfully");
+                return true;
+            } else {
+                //System.out.println("Failed to add artist");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
-    
-    public static void insertArtist(String name, String bandName) {
-        String sql = "INSERT INTO `Artist` (`name`, `bandName`) VALUES (\""+name+"\", \""+bandName+"\");";
-        runUpdate(sql);
-        
+
+
+
+
+public static boolean artistNameExists(String name) {
+    String query = "SELECT COUNT(*) FROM `Artist` WHERE `name` = ?";
+    try {
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, name);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            int count = resultSet.getInt(1);
+            return count > 0;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return false;
+}
+
+
+
 
     public static void updateArtist(int Id, String newName, String newBandName) {
+        if (artistNameExists(newName)) {
+            System.out.println("Artist with the same name already exists in the database.");
+            return; // Exit the method if the name already exists
+        }
+
+        if (!Validator.containsOnlyAlphabetic(newName)) {
+            System.out.println("Artist Name must contain only letters. Please try again.");
+            return; // Exit the method if the name contains non-alphabetic characters
+        }
+
         String sql = "UPDATE `Artist` SET `name` = \"" + newName + "\", `bandName` = \"" + newBandName + 
                 "\" WHERE `Id` = " + Id + ";";
 

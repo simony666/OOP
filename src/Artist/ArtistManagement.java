@@ -86,24 +86,26 @@ public class ArtistManagement {
         System.out.println("\n========================================");
         System.out.println("============   Add Artist  =============");
         System.out.println("========================================\n");
+
         String artistName;
         do {
-            System.out.print("Please enter Artist Name: ");
+            System.out.print("Please enter the Artist's Name: ");
             artistName = sc.nextLine().trim();
             if (artistName.isEmpty()) {
                 System.out.println("Artist Name cannot be empty. Please try again.");
-            } else {
-                if (!Validator.containsNonNumeric(artistName)) {
-                    System.out.println("Artist Name must contain at least one letter or non-numeric character. Please try again.");
-                    artistName = ""; // Reset artistName to trigger the loop again
-                }
+            } else if (!Validator.containsOnlyAlphabetic(artistName)) {
+                System.out.println("Artist Name must contain only letters. Please try again.");
+                artistName = ""; // Reset artistName to trigger the loop again
+            } else if (Database.artistNameExists(artistName)) {
+                System.out.println("Artist with the same name already exists in the database.");
+                return null; // Return null to indicate an error
             }
         } while (artistName.isEmpty());
 
-        String bandName = null; // Set the default value to null
+        String bandName = ""; // Initialize bandName to an empty string
 
         try {
-            System.out.print("Please enter Band name (or leave it empty for no band): ");
+            System.out.print("Please enter the Band name (or leave it empty for no band): ");
             String input = sc.nextLine().trim();
 
             if (!input.isEmpty()) {
@@ -116,20 +118,24 @@ public class ArtistManagement {
             }
         }
 
-
         // Create the artist
-        Artist artist = new Artist( artistName, bandName);
-        //Connection dbConnection = Database.getConnection();
+        Artist artist = new Artist(artistName, bandName);
 
-        Database.insertArtist( artist.getName(), artist.getBandName());
+        // Insert the artist into the database and check if insertion was successful
+        boolean insertionSuccessful = Database.insertArtist(artist.getName(), artist.getBandName());
 
-
-        // Add the artist to the ArrayList
-        Artist.getArtistArrayList().add(artist);
-        System.out.println("Artist added successfully");
+        if (insertionSuccessful) {
+            // Add the artist to the ArrayList only if insertion was successful
+            Artist.getArtistArrayList().add(artist);
+            System.out.println("Artist added successfully");
+        } else {
+            System.out.println("Failed to add artist.");
+        }
 
         return artist; // Return the created artist
     }
+
+
 
 
 
@@ -242,27 +248,30 @@ public class ArtistManagement {
 
             String artistName;
             do {
-                System.out.print("Please enter Artist Name: ");
+                System.out.print("Please enter the Artist's Name: ");
                 artistName = sc.nextLine().trim();
                 if (artistName.isEmpty()) {
                     System.out.println("Artist Name cannot be empty. Please try again.");
-                } else {
-                    if (!Validator.containsNonNumeric(artistName)) {
-                        System.out.println("Artist Name must contain at least one letter or non-numeric character. Please try again.");
-                        artistName = ""; // Reset artistName to trigger the loop again
-                    }
+                } else if (!Validator.containsOnlyAlphabetic(artistName)) {
+                    System.out.println("Artist Name must contain only letters. Please try again.");
+                    artistName = ""; // Reset artistName to trigger the loop again
+                } else if (Database.artistNameExists(artistName)) {
+                    System.out.println("Artist with the same name already exists in the database.");
+                    return; // Exit the method if the artist name already exists
                 }
             } while (artistName.isEmpty());
 
             // Update artist details
             selectedArtist.setName(artistName);
 
+            String bandName = null; // Initialize bandName as null
+
             // Capture new band name
             System.out.print("Please enter Band name (or leave it empty for no band): ");
-            String bandName = sc.nextLine().trim();
+            String input = sc.nextLine().trim();
 
-            if (bandName.isEmpty()) {
-                bandName = null; // Set the bandName to null if it's empty
+            if (!input.isEmpty()) {
+                bandName = input; // Update bandName if input is not empty
             }
 
             selectedArtist.setBandName(bandName);

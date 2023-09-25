@@ -14,170 +14,160 @@ import java.util.ArrayList;
  * @author Zy
  */
 public class ArtistManagement {
-    // create array object to store artist data
-   static ArrayList<Artist> array = new ArrayList<Artist>();
+    
    
     // display artist screen
-public static void displayArtistScreen() {
-    ArrayList<Artist> artistList = Artist.getArtistArrayList(); // Retrieve the artist list
-    Scanner sc = new Scanner(System.in);
+    public static void displayArtistScreen() {
+        ArrayList<Artist> artistList = Artist.getArtistArrayList(); // Retrieve the artist list
+        Scanner sc = new Scanner(System.in);
 
-    while (true) {
-        System.out.println("\n" + "=====================================");
-        System.out.println("========   Manage Artist  ===========");
-        System.out.println("=====================================");
-        System.out.println("======= 1) Add Artist         =======");
-        System.out.println("======= 2) View Artist        =======");
-        System.out.println("======= 3) Modify Artist      =======");
-        System.out.println("======= 4) Remove Artist      =======");
-        System.out.println("======= 5) Back to Admin Page =======");
-        System.out.println("======= 6) Exit               =======");
-        System.out.println("=====================================" + "\n");
+        while (true) {
+            System.out.println("\n" + "=====================================");
+            System.out.println("========   Manage Artist  ===========");
+            System.out.println("=====================================");
+            System.out.println("======= 1) Add Artist         =======");
+            System.out.println("======= 2) View Artist        =======");
+            System.out.println("======= 3) Modify Artist      =======");
+            System.out.println("======= 4) Remove Artist      =======");
+            System.out.println("======= 5) Back to Admin Page =======");
+            System.out.println("======= 6) Exit               =======");
+            System.out.println("=====================================" + "\n");
 
-        System.out.print("Please enter your selection: ");
-        String input = sc.nextLine();
+            System.out.print("Please enter your selection: ");
+            String input = sc.nextLine();
 
-        // Symbol checking
-        if (Validator.containsSymbol(input)) {
-            System.out.println("Input contains specific symbols.");
-        } else {
-            try {
-                int selection = Integer.parseInt(input);
+            // Symbol checking
+            if (Validator.containsSymbol(input)) {
+                System.out.println("Input contains specific symbols.");
+            } else {
+                try {
+                    int selection = Integer.parseInt(input);
 
-                switch (selection) {
-                    case 1:
-                        ClearScreen.cls();
-                        ArtistManagement.addArtist();
-                        break;
-                    case 2:
-                        ClearScreen.cls();
-                        ArtistManagement.viewArtist(); 
-                        break;
-                    case 3:
-                        ClearScreen.cls();
-                        updateArtist(artistList); // Pass the artistList
-                        break;
-                    case 4:
-                        ClearScreen.cls();
-                        deleteArtist(artistList); // Pass the artistList
-                        break;
-                    case 5:
-                         ClearScreen.cls();
-                         main.mainScreen.displayAdmin();
-                        break;
-                    case 6:
-                        System.out.println("Thanks for using");
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("Invalid Range, Please enter a number between 1 to 6");
+                    switch (selection) {
+                        case 1:
+                            ClearScreen.cls();
+                            ArtistManagement.addArtist();
+                            break;
+                        case 2:
+                            ClearScreen.cls();
+                            ArtistManagement.viewArtist(); 
+                            break;
+                        case 3:
+                            ClearScreen.cls();
+                            updateArtist(artistList); // Pass the artistList
+                            break;
+                        case 4:
+                            ClearScreen.cls();
+                            deleteArtist(artistList); // Pass the artistList
+                            break;
+                        case 5:
+                             ClearScreen.cls();
+                             main.mainScreen.displayAdmin();
+                            break;
+                        case 6:
+                            System.out.println("Thanks for using");
+                            System.exit(0);
+                            break;
+                        default:
+                            System.out.println("Invalid Range, Please enter a number between 1 to 6");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a numeric value.");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a numeric value.");
             }
         }
     }
-}
-        
-    
-    // add artist
-private static Artist addArtist() {
-    Scanner sc = new Scanner(System.in);
 
-    System.out.println("\n========================================");
-    System.out.println("============   Add Artist  =============");
-    System.out.println("========================================\n");
-    String artistName;
-    do {
-        System.out.print("Please enter Artist Name: ");
-        artistName = sc.nextLine().trim();
-        if (artistName.isEmpty()) {
-            System.out.println("Artist Name cannot be empty. Please try again.");
-        } else {
-            if (!Validator.containsNonNumeric(artistName)) {
-                System.out.println("Artist Name must contain at least one letter or non-numeric character. Please try again.");
-                artistName = ""; // Reset artistName to trigger the loop again
+
+    // add artist
+    private static Artist addArtist() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("\n========================================");
+        System.out.println("============   Add Artist  =============");
+        System.out.println("========================================\n");
+        String artistName;
+        do {
+            System.out.print("Please enter Artist Name: ");
+            artistName = sc.nextLine().trim();
+            if (artistName.isEmpty()) {
+                System.out.println("Artist Name cannot be empty. Please try again.");
+            } else {
+                if (!Validator.containsNonNumeric(artistName)) {
+                    System.out.println("Artist Name must contain at least one letter or non-numeric character. Please try again.");
+                    artistName = ""; // Reset artistName to trigger the loop again
+                }
+            }
+        } while (artistName.isEmpty());
+
+        String bandName = null; // Set the default value to null
+
+        try {
+            System.out.print("Please enter Band name (or leave it empty for no band): ");
+            String input = sc.nextLine().trim();
+
+            if (!input.isEmpty()) {
+                bandName = input; // Update the bandName if input is not empty
+            }
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Band name cannot be empty.")) {
+                System.out.println("Invalid band name input. Band name cannot be empty.");
+                return null; // Return null to indicate an error
             }
         }
-    } while (artistName.isEmpty());
 
-    String bandName = null; // Set the default value to null
 
-    try {
-        System.out.print("Please enter Band name (or leave it empty for no band): ");
-        String input = sc.nextLine().trim();
-
-        if (!input.isEmpty()) {
-            bandName = input; // Update the bandName if input is not empty
-        }
-        
         // Create the artist
-        Artist artist = new Artist(artistName, bandName);
-        
-        // Insert the artist into the database
-        //Database.insertArtist(artist.getName(), artist.getBandName());
+        Artist artist = new Artist( artistName, bandName);
+        //Connection dbConnection = Database.getConnection();
+
+        Database.insertArtist( artist.getName(), artist.getBandName());
+
 
         // Add the artist to the ArrayList
         Artist.getArtistArrayList().add(artist);
         System.out.println("Artist added successfully");
 
-        // return artist; // Return the created artist
-    } catch (IllegalArgumentException e) {
-        if (e.getMessage().equals("Band name cannot be empty.")) {
-            System.out.println("Invalid band name input. Band name cannot be empty.");
-            return null; // Return null to indicate an error
-        }
+        return artist; // Return the created artist
     }
-
-
-    // Create the artist
-    Artist artist = new Artist(artistName, bandName);
-    //Connection dbConnection = Database.getConnection();
-    System.out.println("2");
-    Database.insertArtist( "ArtistName", "BandName");
-    System.out.println("3");
-
-    // Add the artist to the ArrayList
-    Artist.getArtistArrayList().add(artist);
-    System.out.println("Artist added successfully");
-
-    return artist; // Return the created artist
-}
 
 
 
     // view artist
     public static void viewArtist() {
-    ArrayList<Artist> artistArrayList = Artist.getArtistArrayList();
-    
-    // check if there are any artists in the list
-    if (artistArrayList.isEmpty()) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("! No artist added, please add an artist to view. !");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + "\n");
-        ArtistManagement.displayArtistScreen();
-        return;
+        // Call the method to retrieve data from the database
+        Database.getArtist();
+
+        ArrayList<Artist> artistList = Database.artistList;
+
+        if (artistList.isEmpty()) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("! No artist added, please add an artist to view. !");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + "\n");
+            ArtistManagement.displayArtistScreen();
+
+        } else {
+            System.out.println("\n" + "==============================================================");
+            System.out.println("======================   Artist Lists  =======================");
+            System.out.println("==============================================================" + "\n");
+            System.out.println("***************************************************************");
+            System.out.printf("%-15s %-20s %-15s", "Artist ID", "Artist Name", "Band Name");
+            System.out.println("\n" + "***************************************************************");
+
+            for (Artist a : artistList) {
+                System.out.printf("%s %20s %20s", a.getId(), a.getName(), a.getBandName()+ "\n");
+            }
+        }
     }
 
-    // display the heading
-    System.out.println("\n" + "==============================================================");
-    System.out.println("======================   Artist Lists  =======================");
-    System.out.println("==============================================================" + "\n");
-    System.out.println("***************************************************************");
-    System.out.printf("%-15s %-20s %-15s", "Artist ID", "Artist Name", "Band Name");
-    System.out.println("\n" + "***************************************************************");
-
-    // retrieve artist info from arrayList
-    for (int i = 0; i < artistArrayList.size(); i++) {
-        Artist a = artistArrayList.get(i);
-        System.out.printf("%s %20s %20s", a.getId(), a.getName(), a.getBandName()+ "\n");
-    }
-}
 
 
     // delete artist
     public static void deleteArtist(ArrayList<Artist> array) {
-       // ArrayList<Artist> artistArrayList = Artist.getArtistArrayList();
+        // Call the method to retrieve data from the database
+        Database.getArtist();
+        ArrayList<Artist> artistList = Database.artistList;
+        
         // capture user input of the artist Id to delete the field
         Scanner sc = new Scanner(System.in);
         
@@ -195,8 +185,8 @@ private static Artist addArtist() {
                 // check whether the artist ID exist
                 // if no, prompt message, yes, remove it
                 int index = -1;
-                for (int i = 0; i < array.size(); i++) {
-                    Artist a = array.get(i);
+                for (int i = 0; i < artistList.size(); i++) {
+                    Artist a = artistList.get(i);
                     if (a.getId() == Integer.parseInt(aId)) {
                         index = i;
                         break;
@@ -206,7 +196,8 @@ private static Artist addArtist() {
                 if (index == -1) {
                     System.out.println("The artist ID is not available. Please try it again");
                 } else {
-                    array.remove(index);
+                    artistList.remove(index);
+                    Database.deleteArtist(aId);
                     System.out.println("Remove artist's ID successfully");
                 }
             }
@@ -217,6 +208,10 @@ private static Artist addArtist() {
 
     // Update artist
     public static void updateArtist(ArrayList<Artist> array) {
+        // Call the method to retrieve data from the database
+        Database.getArtist();
+        ArrayList<Artist> artistList = Database.artistList;
+        
         Scanner sc = new Scanner(System.in);
 
         // Display available artists
@@ -228,16 +223,18 @@ private static Artist addArtist() {
 
         try {
             int aId = Integer.parseInt(aIdInput);
+            System.out.println(String.valueOf(aId));
 
             // Find the artist with the given ID
             Artist selectedArtist = null;
-            for (Artist artist : array) {
+                   
+            for (Artist artist : artistList) {
                 if (artist.getId() == aId) {
                     selectedArtist = artist;
                     break;
                 }
             }
-
+            
             if (selectedArtist == null) {
                 System.out.println("The artist with ID " + aId + " does not exist.");
                 return; // Exit the method if the artist doesn't exist
@@ -270,10 +267,14 @@ private static Artist addArtist() {
 
             selectedArtist.setBandName(bandName);
 
+            // Corrected method call
+            Database.updateArtist(aId, artistName, bandName);
+
             System.out.println("Artist details updated successfully!");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid artist ID.");
         }
     }
+
 
 }

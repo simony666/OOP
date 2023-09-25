@@ -2,7 +2,6 @@ package Artist;
 
 import java.util.ArrayList;
 import util.Person;
-import util.Database;
 
 import util.Database;
 /**
@@ -16,7 +15,7 @@ public class Artist extends Person {
     private String bandName;
     
     // static field
-    private static int nextId = 1;
+    // private static int nextId = 1;
     
     
     // Shared ArrayList for storing artists
@@ -28,15 +27,21 @@ public class Artist extends Person {
         
     };
     
-    // Constructor with 2 parameters
     public Artist(String name, String bandName){
         super(name);
-        this.id = nextId;
+        this.bandName = bandName;
+    }
+    
+    // Constructor with 2 parameters
+    public Artist(int id, String name, String bandName){
+        super(name);
+        this.id = id;
+        // this.id = nextId;
         this.bandName = bandName;
 //        this.age = age;
 //        this.role = role;
         // Increment nextId for the next artist
-        nextId++;
+        //nextId++;
     };  
 
     public String getBandName() {
@@ -51,9 +56,9 @@ public class Artist extends Person {
     
   
     
-    public static int getNextId(){
-        return nextId;
-    }
+//    public static int getNextId(){
+//        return nextId;
+//    }
     
     public static ArrayList<Artist> getArtistArrayList() {
         return artistArrayList;
@@ -61,9 +66,9 @@ public class Artist extends Person {
     
     
     // setter / Mutuator for id, name, age, and role
-    public void setId(int id){
-        this.id = id;
-    }
+//    public void setId(int id){
+//        this.id = id;
+//    }
 
     public void setBandName(String bandName) {
             this.bandName = bandName;

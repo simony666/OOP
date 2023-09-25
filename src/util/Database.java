@@ -48,7 +48,7 @@ public class Database {
         return conn;
     }
     
-    private static ResultSet runQuery(String sqlText){
+    public static ResultSet runQuery(String sqlText){
         ResultSet resultSet = null;
 
         try {
@@ -61,7 +61,7 @@ public class Database {
         return resultSet;
     }
     
-    private static int runUpdate(String sqlText){
+    public static int runUpdate(String sqlText){
         int sucess = 0;
 
         try {

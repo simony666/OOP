@@ -6,6 +6,7 @@ import Schedule.ScheduleManagement;
 import util.Validator;
 import java.util.Scanner;
 import util.ClearScreen;
+import util.Database;
 
 /**
  *
@@ -17,8 +18,10 @@ public class mainScreen {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       ClearScreen.cls();
-       displayMainScreen();
+        Database database = new Database();
+        ClearScreen.cls();
+        //ArtistManagement.displayArtistScreen();
+        displayMainScreen();
         
     }
     

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import util.Database;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
@@ -18,26 +19,31 @@ import java.util.Scanner;
  * @author User
  */
 public class Seat {
+
+    static void existSeat(String InSeatID) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     private String SeatID;
     private String venue;
     private double price;
     private int status;
-//    private Database db = new Database("C:/Users/User/Documents/Study/Y1 S3/JAVA/seatDatabase.db");
-    private String[][] seatArray = new String[3][];
+    private static ArrayList<Seat> seatArrayList = new ArrayList<Seat>();
     
     
     public Seat() {
     }
-    
+
     public Seat(String SeatID, String venue, double price, int status) {
         this.SeatID = SeatID;
         this.venue = venue;
         this.price = price;
         this.status = status;
     }
+    
+    
 
     
-        public String getSeatID() {
+    public String getSeatID() {
         return SeatID;
     }
 
@@ -48,6 +54,7 @@ public class Seat {
     public String getVenue() {
         return venue;
     }
+    
 
     public void setVenue(String venue) {
         this.venue = venue;
@@ -67,302 +74,271 @@ public class Seat {
 
     public void setStatus(int status) {
         this.status = status;
+    }    
+
+    public static ArrayList<Seat> getSeatArrayList() {
+        return seatArrayList;
     }
 
-    public String[][] getSeatArray() {
-        return seatArray;
-    }
-
-    public void setSeatArray(String[][] seatArray) {
-        this.seatArray = seatArray;
-    }
-  
-    
-    //Connect to sqLite database
-    private Connection connect() {
-        // SQLite connection string
-        String url = "jdbc:sqlite:C:/Users/User/Documents/Study/Y1 S3/JAVA/seatDatabase.db";
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            e.getMessage();
-        } 
-        return conn;
+    public static void setSeatArrayList(ArrayList<Seat> seatArrayList) {
+        Seat.seatArrayList = seatArrayList;
     }
     
     
-    //Select seat data from database
-    public void selectSeatFromDatabase(){
-        String sql = "SELECT seatID, price, venue, status FROM seat";
+    
+    //Add seat method
+    public static Seat addSeat() {
+        Scanner sc = new Scanner(System.in);
+        String InSeat;
+        String InVenue;
+        double InPrice;
+        int InStatus = 1; //set status is default (1 for available, 2 for Unavailable)
         
-        try (Connection conn = this.connect();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)){
-            
-            // Initialize ArrayLists for each category
-            List<String[]> rList = new ArrayList<>();
-            List<String[]> vList = new ArrayList<>();
-            List<String[]> aList = new ArrayList<>();
-            
-            // loop through the result set
-            while (rs.next()) {
-                String seatID = rs.getString("seatID");
-                double price = rs.getDouble("price");
-                String venue = rs.getString("venue");
-                int status = rs.getInt("status");
-                
-                // Create an array to hold the data for each seat
-                String[] seatData = {seatID, String.valueOf(price), venue, String.valueOf(status)};
-                
-                // Categorize the seat data based on the first alphabet of SeatID
-                char firstChar = seatID.charAt(0);
-                switch (firstChar) {
-                    case 'R':
-                        rList.add(seatData);
-                        System.out.println(rList);
+        //let user input the seat ID and verify
+        do {
+            boolean idExist = false;
+            System.out.print("Please enter Seat ID: ");
+            InSeat = sc.nextLine().trim();
+            if (InSeat.isEmpty()) {
+                System.out.println("Seat ID cannot be empty. Please try again.");
+                InSeat = null;
+            }else 
+                // Check if the Seat ID already exists
+                for (Seat seat : seatArrayList) {
+                    if (seat.getSeatID().equals(InSeat)) {
+                        idExist = true;
                         break;
-                    case 'V':
-                        vList.add(seatData);
-                        System.out.println(vList);
-                        break;
-                    case 'A':
-                        aList.add(seatData);
-                        System.out.println(aList);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            
-            // Convert the ArrayLists to 2D arrays
-            seatArray = rList.toArray(new String[0][]);
-            seatArray = vList.toArray(new String[1][]);
-            seatArray = aList.toArray(new String[2][]);
-           
-            
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    
-    //Add seat into arrayList
-    private void addToSeatArray(Seat newSeat) {
-        // Determine the category based on the first character of seatID
-        char firstChar = newSeat.getSeatID().charAt(0);
-        int categoryIndex = -1;
-
-        switch (firstChar) {
-            case 'R':
-                categoryIndex = 0;
-                break;
-            case 'V':
-                categoryIndex = 1;
-                break;
-            case 'A':
-                categoryIndex = 2;
-                break;
-            default:
-                break;
-        }
-
-        if (categoryIndex != -1) {
-            // Calculate the new size of the array
-            int newSize = seatArray[categoryIndex] != null ? seatArray[categoryIndex].length + 1 : 1;
-
-            // Create a new array with the updated size
-            String[][] newArray = new String[3][];
-            for (int i = 0; i < seatArray.length; i++) {
-                if (i == categoryIndex) {
-                    newArray[i] = new String[newSize];
-                    if (seatArray[i] != null) {
-                        // Copy existing data to the new array
-                        System.arraycopy(seatArray[i], 0, newArray[i], 0, seatArray[i].length);
                     }
-                    // Add the new seat data to the new array
-                    newArray[i][newSize - 1] = newSeat.getSeatID() + "," + newSeat.getPrice() + "," +
-                            newSeat.getVenue() + "," + newSeat.getStatus();
-                } else {
-                    newArray[i] = seatArray[i];
+                }
+            if (idExist) {
+                System.out.println("Seat ID already exists. Please choose a different Seat ID.");
+                InSeat = null; // Set InVenue to null to indicate an error
+            }
+        }while (InSeat == null);
+
+        
+        //let let user input the venue and verify
+        do {
+            System.out.print("Please enter Venue (Venue ID): ");
+            InVenue = sc.nextLine().trim();
+            if (InVenue.isEmpty()) {
+            System.out.println("Location cannot be empty. Please try again.");
+            }
+        } while (InVenue.isEmpty());
+
+        
+        //let user input the price and verify
+        try {
+            System.out.print("Please enter Seat Price: ");
+            InPrice = sc.nextInt();
+            sc.nextLine(); // Consume the newline character
+
+            if (InPrice <= 0 ) {
+                throw new IllegalArgumentException("Invalid seat price");
+            }
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Invalid seat price")) {
+                System.out.println("Invalid seat price input. Please try again");
+                return null; // Return null to indicate an error
+            }
+            
+            InPrice = 0;
+        } catch (InputMismatchException ex) {
+            System.out.println("Invalid input. Please enter a value.");
+            sc.nextLine();
+            InPrice = -1;
+            return null; // Return null to indicate an error
+        }
+        
+        //let user input the status and verify
+//        try {
+//            System.out.print("Please enter status(1 for available, 2 for unavaialable): ");
+//            InStatus = sc.nextInt();
+//            sc.nextLine(); // Consume the newline character
+//
+//            if (InStatus != 1 || InStatus != 2) {
+//                throw new IllegalArgumentException("Invalid status(1 for available, 2 for unavaialable)");
+//            }
+//        } catch (IllegalArgumentException e) {
+//            if (e.getMessage().equals("Invalid status")) {
+//                System.out.println("Invalid status input. Please try again");
+//                return null; // Return null to indicate an error
+//            }
+//            
+//            InStatus = 0;
+//        } catch (InputMismatchException ex) {
+//            System.out.println("Invalid input. Please enter a value.");
+//            sc.nextLine();
+//            InStatus = -1;
+//            return null; // Return null to indicate an error
+//        }
+
+        // Create the temporary list for store Venue
+        Seat SList = new Seat(InSeat, InVenue, InPrice, InStatus);
+
+        // Add the artist to the ArrayList
+        Seat.seatArrayList.add(SList);
+        System.out.println("Seat added successfully");
+
+        return SList; // Return the venue
+    }
+        
+        
+    
+    //View all venue
+    public static void viewAllSeat() {
+        if (seatArrayList.isEmpty()) {
+            System.out.println("============:   No seat found   :============" + "\n\n");
+            SeatManager.displayVenueScreen();
+        } else {
+            for (Seat seat : seatArrayList) {
+                System.out.println("=============:   Seat Lsit   :=============" +"\n");
+                System.out.printf("%-15s, %-15s, %-15s, %-15s", "seatID", "venue", "price", "status");
+                System.out.println("\n"+"______________________________________________________");
+                for (int i = 0; i < seatArrayList.size(); i++) {
+                    Seat seatView = seatArrayList.get(i);
+            System.out.printf("%-15s %-25s %-15s %-15s", seatView.getSeatID(), seatView.getVenue(), seatView.getPrice(), seatView.getStatus() + "\n");
+        }      
+            }
+        }
+    }
+    
+    public static void modifySeat(){
+        Scanner sc = new Scanner(System.in);
+
+        viewAllSeat();
+
+        // Prompt the user to enter the Seat ID to modify
+        System.out.print("\n" + "Please enter the Seat ID to modify: ");
+        String modifySc = sc.nextLine().trim();
+
+        // Find the index of the seat with the matching Seat ID
+        int index = -1;
+        for (int i = 0; i < seatArrayList.size(); i++) {
+            Seat seat = seatArrayList.get(i);
+            if (seat.getSeatID().equals(modifySc)) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1) {
+            System.out.println("Seat with ID '" + modifySc + "' not found.");
+        } else {
+            // Seat found, allow modifications
+            System.out.println("Current Venue Details:");
+            System.out.println("Venue ID: " + seatArrayList.get(index).getVenue());
+            System.out.println("Location: " + seatArrayList.get(index).getPrice());
+            System.out.println("Capacity: " + seatArrayList.get(index).getStatus());
+
+            // Prompt for new details
+            System.out.print("Enter new Seat ID (press Enter to keep current): ");
+            String newSeatID = sc.nextLine().trim();
+        
+            // Check if a seat with the new Seat ID already exists (excluding the current venue)
+            for (int i = 0; i < seatArrayList.size(); i++) {
+                Seat seat = seatArrayList.get(i);
+                if (seat.getSeatID().equals(newSeatID) && !newSeatID.equals(modifySc)) {
+                    System.out.println("Seat with ID '" + newSeatID + "' already exists. Please choose a different Seat ID.");
+                    return; // Return early if the new Seat ID already exists
                 }
             }
 
-            // Update the seatArray reference with the new array
-            seatArray = newArray;
+            // If the user wants to change the Seat ID, update it
+            if (!newSeatID.isEmpty()) {
+                seatArrayList.get(index).setSeatID(newSeatID);
+            }
+
+            System.out.print("Enter new Venue (press Enter to keep current): ");
+            String newVenue = sc.nextLine().trim();
+            if (!newVenue.isEmpty()) {
+                seatArrayList.get(index).setVenue(newVenue);
+            }
+
+            System.out.print("Enter new price (press Enter to keep current): ");
+            String newPriceStr = sc.nextLine().trim();
+            if (!newPriceStr.isEmpty()) {
+                try {
+                    int newPrice = Integer.parseInt(newPriceStr);
+                    if (newPrice > 0) {
+                        seatArrayList.get(index).setPrice(newPrice);
+                    } else {
+                        System.out.println("Invalid price input. Price must be greater than 0.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a numeric value for price.");
+                }
+            }
+            
+            System.out.print("Enter new status <1 || 2> (press Enter to keep current): ");
+            String newStatusStr = sc.nextLine().trim();
+            if (!newStatusStr.isEmpty()) {
+                try {
+                    int newStatus = Integer.parseInt(newStatusStr);
+                    if (newStatus > 0 || 3 < newStatus) {
+                        seatArrayList.get(index).setStatus(newStatus);
+                        System.out.println("Seat details modified successfully.");
+                    } else {
+                        System.out.println("Invalid Seat input. Price must be greater than 0.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a numeric value for status.");
+                }
+            }
+        }   
+    }
+
+    
+    
+    public static void deleteSeat(ArrayList<Seat> seatArrayList) {
+        Scanner sc = new Scanner(System.in);
+
+        viewAllSeat();
+
+        try {
+            System.out.print("Please enter the Seat ID that you want to delete: ");
+            String deleSc = sc.nextLine();
+            int index = -1;
+            for (int i = 0; i < seatArrayList.size(); i++) {
+                Seat dele = seatArrayList.get(i);
+                if (dele.getSeatID().equals(deleSc)) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == -1) {
+                System.out.println("The seat ID is not exits. Please try it again");
+            } else {
+                seatArrayList.remove(index);
+                System.out.println("Remove seat ID successfully");
+            }
+            
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a value.");
         }
     }
     
-    //Save Seat to database
-    private void saveSeatToDatabase(Seat newSeat) {
-        String sql = "INSERT INTO seat (seatID, price, venue, status) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = this.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, newSeat.getSeatID());
-            pstmt.setDouble(2, newSeat.getPrice());
-            pstmt.setString(3, newSeat.getVenue());
-            pstmt.setInt(4, newSeat.getStatus());
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error saving seat data to the database: " + e.getMessage());
+    
+    public static Seat existSeat(String SeatID){
+        for (Seat seat : seatArrayList) {
+            if (seat.getSeatID().equals(SeatID)) {
+            
+                return seat; // Return the Seat object when a matching SeatID is found.
+            }
         }
+        return null; // Return null if no matching SeatID is found.
     }
-
-   
     
-    public void addSeat() {
-        selectSeatFromDatabase(); // Fetch existing seat data first
-
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.print("Enter Seat ID: ");
-            String seatID = scanner.nextLine();
-
-            System.out.print("Enter Price: ");
-            double price = scanner.nextDouble();
-
-            scanner.nextLine(); // Consume the newline character left by nextDouble()
-
-            System.out.print("Enter Venue: ");
-            String venue = scanner.nextLine();
-
-            System.out.print("Enter Status: ");
-            int status = scanner.nextInt();
-
-            // Create a new seat object with user-entered data
-            Seat newSeat = new Seat(seatID, venue, price, status);
-
-            // Add the new seat data to the seatArray
-            addToSeatArray(newSeat);
-
-            // Save the new seat data to the database
-            saveSeatToDatabase(newSeat);
-
-            System.out.println("Seat added successfully.");
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-        }
+    
+    public static double getSeatPrice(String SeatID, double Price){
+        double price;
+        for (int i = 0; i < seatArrayList.size(); i++){
+            Seat seat = seatArrayList.get(i);
+            price = seat.getPrice();
+                 
+            return price; // Return the Seat object when a matching SeatID is found.
+            }
+        return 0;
     }
-}
-    
-    
-    
-    
-//        public String addSeat(String seat){
-//        
-//            Connection conn = db.getConnection();   
-//            String sqlText = "select * from Data;";
-//            ResultSet result;
-//            try {
-//                result = db.runSql(sqlText);
-//                while (result.next()) {
-//                //assume table : id, name,price,catergoty
-//                    int id = result.getInt("ID");
-//                String name = result.getString("name");
-//            }
-//        } catch (SQLException ex) {
-//            //Log Error
-//        }
-//            return null;
-//        }
-    
-    
-//     Method to read data from the database and set it in the seatArray
-//    public void loadSeatsFromDatabase() {
-//        Connection conn = db.getConnection();
-//        String sqlText = "SELECT * FROM seat;";
-//        ResultSet result;
-//        
-//        try {
-//            result = db.runSql(sqlText);
-//            while (result.next()) {
-//                String seatID = result.getString("seatID");
-//                double price = result.getDouble("price");
-//                String seatID = String.format("%c%03d", name.charAt(0), id); // Assuming name contains "r", "v", "a" as the seat type
-//                int typeIndex = getTypeIndex(name.charAt(0)); // Get the index for the seat type
-//                addSeatToArray(typeIndex, seatID);
-//            }
-//        } catch (SQLException ex) {
-//            // Handle the exception (log or throw it)
-//            ex.printStackTrace();
-//        }
-//    }
-    
-//    private int getTypeIndex(char seatType) {
-//        switch (seatType) {
-//            case 'r':
-//                return 0; // Regular seats
-//            case 'v':
-//                return 1; // VIP seats
-//            case 'a':
-//                return 2; // Accessible seats
-//            default:
-//                return 3; // Default (for unrecognized types)
-//
-//        }
-//        
-//    }
-    
-//    private void addSeatToArray(int typeIndex, String seatID) {
-//        String[] seatsOfType = seatArray[typeIndex];
-//        String[] newSeatsOfType = new String[seatsOfType.length + 1];
-//        System.arraycopy(seatsOfType, 0, newSeatsOfType, 0, seatsOfType.length);
-//        newSeatsOfType[seatsOfType.length] = seatID;
-//        seatArray[typeIndex] = newSeatsOfType;
-//    }
-
-    
-    
-//    public String addSeat(String seat){
-//        
-//        Connection conn = db.getConnection();
-//        String sqlText = "select * from Data;";
-//        ResultSet result;
-//        try {
-//            result = db.runSql(sqlText);
-//            while (result.next()) {
-//                //assume table : id, name,price,catergoty
-//                int id = result.getInt("ID");
-//                String name = result.getString("name");
-//            }
-//        } catch (SQLException ex) {
-//            //Log Error
-//        }
-//        return null;
-//    }
-    
-    
-        // Method to add a seat to the database
-//    public void addSeat(String seatID) throws SQLException {
-//        Connection conn = db.getConnection();
-//        String sqlText = "INSERT INTO Seat (seatID) VALUES (?)";
-//        try (PreparedStatement preparedStatement = conn.prepareStatement(sqlText)) {
-//            preparedStatement.setString(1, seatID);
-//            preparedStatement.executeUpdate();
-//        }
-//    }
-//
-//    // Method to modify a seat in the database
-//    public void modifySeat(String oldSeatID, String newSeatID) throws SQLException {
-//        Connection conn = db.getConnection();
-//        String sqlText = "UPDATE Seat SET seatID = ? WHERE seatID = ?";
-//        try (PreparedStatement preparedStatement = conn.prepareStatement(sqlText)) {
-//            preparedStatement.setString(1, newSeatID);
-//            preparedStatement.setString(2, oldSeatID);
-//            preparedStatement.executeUpdate();
-//        }
-//    }
-//
-//    // Method to remove a seat from the database
-//    public void removeSeat(String seatID) throws SQLException {
-//        Connection conn = db.getConnection();
-//        String sqlText = "DELETE FROM Seat WHERE seatID = ?";
-//        try (PreparedStatement preparedStatement = conn.prepareStatement(sqlText)) {
-//            preparedStatement.setString(1, seatID);
-//            preparedStatement.executeUpdate();
-//        }
-//    }
-
-
 }

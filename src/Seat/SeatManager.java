@@ -1,7 +1,11 @@
 package Seat;
 
+import Seat.Venue;
+import Seat.Seat;
+import java.util.ArrayList;
 import java.util.Scanner;
-import util.SymbolValidator;
+import util.ClearScreen;
+import util.Validator;
 
 
 /**
@@ -11,15 +15,23 @@ import util.SymbolValidator;
 
 public class SeatManager {
 
-//    public static void main(String[] args){
-//        Seat seat = new Seat();
-//        seat.selectAll();
-//    }
+    static ArrayList<Seat> seatList = Seat.getSeatArrayList();
+    static ArrayList<Venue> venueList = Venue.getVenueArrayList();
+    static ArrayList<Ticket> ticketList = Ticket.getTicketArrayList();
+
+
+    public static void main(String[] args){
+        displaySeatMainScreen();
+                
+
+    }
     
     //Display Seat Management Main Screen
     public static void displaySeatMainScreen() {
         Scanner sc = new Scanner(System.in);
-
+        
+        ClearScreen.cls();
+        
         while (true) {
             System.out.println("\n" + "=======================================");
             System.out.println("========   Seat Management  ===========");
@@ -35,7 +47,7 @@ public class SeatManager {
             String input = sc.nextLine();
 
             // Symbol checking
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains specific symbols.");
             } else {
                 try {
@@ -49,7 +61,7 @@ public class SeatManager {
                             displayVenueScreen(); 
                             break;
                         case 3:
-                            displaySeatScreen();
+                            //displaySeatScreen();
                             break;
                         case 4:
                             main.mainScreen.displayAdmin();
@@ -70,23 +82,26 @@ public class SeatManager {
     
     public static void displaySeatScreen() {
         Scanner sc = new Scanner(System.in);
-
+        
+        ClearScreen.cls();
+        
         while (true) {
             System.out.println("\n" + "===========================================");
             System.out.println("=============   Manage Seat  ==============");
             System.out.println("===========================================");
             System.out.println("======= 1) Add Seat                ========");
-            System.out.println("======= 2) Modify Seat             ========");
-            System.out.println("======= 3) Delete Seat             ========");
-            System.out.println("======= 4) Back to Management Page ========");
-            System.out.println("======= 5) Back to Admin Page      ========");
+            System.out.println("======= 2) View Seat               ========");
+            System.out.println("======= 3) Modify Seat             ========");
+            System.out.println("======= 4) Delete Seat             ========");
+            System.out.println("======= 5) Back to Management Page ========");
+            System.out.println("======= 6) Back to Admin Page      ========");
             System.out.println("===========================================" + "\n");
 
             System.out.print("Please enter your selection: ");
             String input = sc.nextLine();
 
             // Symbol checking
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains specific symbols.");
             } else {
                 try {
@@ -94,26 +109,25 @@ public class SeatManager {
 
                     switch (selection) {
                         case 1:
-                            ArtistManagement.addArtist();
+                            Seat.addSeat();
                             break;
                         case 2:
-                            ArtistManagement.viewArtist(); 
+                            Seat.viewAllSeat(); 
                             break;
                         case 3:
-                            updateArtist(artistList); // Pass the artistList
+                            Seat.modifySeat(); 
                             break;
                         case 4:
-                            deleteArtist(artistList); // Pass the artistList
+                            Seat.deleteSeat(seatList); 
                             break;
                         case 5:
-                            main.mainScreen.displayAdmin();
+                            displaySeatMainScreen();
                             break;
                         case 6:
-                            System.out.println("Thanks for using");
-                            System.exit(0);
+                            main.mainScreen.displayAdmin();
                             break;
                         default:
-                            System.out.println("Invalid Range, Please enter a number between 1 to 5");
+                            System.out.println("Invalid Range, Please enter a number between 1 to 6");
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a numeric value.");
@@ -122,25 +136,27 @@ public class SeatManager {
         }
     }
     
-        public static void displayVenueScreen() {
+    public static void displayVenueScreen() {
         Scanner sc = new Scanner(System.in);
-
+        
+        
         while (true) {
             System.out.println("\n" + "===========================================");
             System.out.println("=============   Manage Venue  =============");
             System.out.println("===========================================");
-            System.out.println("======= 1) Add Venue                =======");
-            System.out.println("======= 2) Modify Venue             =======");
-            System.out.println("======= 3) Delete Venue             =======");
-            System.out.println("======= 4) Back to Management Page ========");
-            System.out.println("======= 5) Back to Admin Page      ========");
+            System.out.println("======= 1) Add Venue               ========");
+            System.out.println("======= 2) View Venue              ========");
+            System.out.println("======= 3) Modify Venue            ========");
+            System.out.println("======= 4) Delete Venue            ========");
+            System.out.println("======= 5) Back to Management Page ========");
+            System.out.println("======= 6) Back to Admin Page      ========");
             System.out.println("===========================================" + "\n");
 
             System.out.print("Please enter your selection: ");
             String input = sc.nextLine();
 
             // Symbol checking
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains specific symbols.");
             } else {
                 try {
@@ -148,26 +164,26 @@ public class SeatManager {
 
                     switch (selection) {
                         case 1:
-                            ArtistManagement.addArtist();
+                            Venue.addVenue();
                             break;
                         case 2:
-                            ArtistManagement.viewArtist(); 
+                            Venue.viewAllVenue();
+                            SeatManager.displayVenueScreen();
                             break;
                         case 3:
-                            updateArtist(artistList); // Pass the artistList
+                            Venue.modifyVenue(); 
                             break;
                         case 4:
-                            deleteArtist(artistList); // Pass the artistList
+                            Venue.deleteVenue(venueList);
                             break;
                         case 5:
-                            main.mainScreen.displayAdmin();
+                            displaySeatMainScreen();
                             break;
                         case 6:
-                            System.out.println("Thanks for using");
-                            System.exit(0);
+                            main.mainScreen.displayAdmin();
                             break;
                         default:
-                            System.out.println("Invalid Range, Please enter a number between 1 to 5");
+                            System.out.println("Invalid Range, Please enter a number between 1 to 6");
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a numeric value.");
@@ -175,17 +191,19 @@ public class SeatManager {
             }
         }
     }
-        
+
+    
     public static void displayTicketScreen() {
         Scanner sc = new Scanner(System.in);
-
+        
+        
         while (true) {
             System.out.println("\n" + "===========================================");
-            System.out.println("============   Manage Ticket  =============");
+            System.out.println("=============   Manage Ticket  =============");
             System.out.println("===========================================");
-            System.out.println("======= 1) Add Ticket                =======");
-            System.out.println("======= 2) Modify Ticket             =======");
-            System.out.println("======= 3) Delete Ticket             =======");
+            System.out.println("======= 1) Add Ticket              ========");
+            System.out.println("======= 2) View Ticket             ========");
+            System.out.println("======= 3) Delete Venue            ========");
             System.out.println("======= 4) Back to Management Page ========");
             System.out.println("======= 5) Back to Admin Page      ========");
             System.out.println("===========================================" + "\n");
@@ -194,7 +212,7 @@ public class SeatManager {
             String input = sc.nextLine();
 
             // Symbol checking
-            if (SymbolValidator.containsSymbol(input)) {
+            if (Validator.containsSymbol(input)) {
                 System.out.println("Input contains specific symbols.");
             } else {
                 try {
@@ -202,33 +220,30 @@ public class SeatManager {
 
                     switch (selection) {
                         case 1:
-                            ArtistManagement.addArtist();
+                            Ticket.addTicket();
                             break;
                         case 2:
-                            ArtistManagement.viewArtist(); 
+                            Ticket.viewAllTicket();
+                            SeatManager.displayVenueScreen();
                             break;
                         case 3:
-                            updateArtist(artistList); // Pass the artistList
+                            Venue.deleteTicket(ticketList);
                             break;
                         case 4:
-                            deleteArtist(artistList); // Pass the artistList
+                            displaySeatMainScreen();
                             break;
                         case 5:
                             main.mainScreen.displayAdmin();
                             break;
-                        case 6:
-                            System.out.println("Thanks for using");
-                            System.exit(0);
-                            break;
                         default:
-                            System.out.println("Invalid Range, Please enter a number between 1 to 5");
+                            System.out.println("Invalid Range, Please enter a number between 1 to 6");
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a numeric value.");
                 }
             }
         }
-    }    
+    }
 }
 
 

@@ -12,7 +12,7 @@ public class Venue {
     private String venueID;
     private String location;
     private int capacity;
-    private static ArrayList<Venue> venueArrayList = new ArrayList<Venue>();
+    private static ArrayList<Venue> venueArrayList = new ArrayList<>();
     
     
     public Venue(){
@@ -56,13 +56,15 @@ public class Venue {
         Venue.venueArrayList = venueArrayList;
     }
     
-    
+    @Override
+    public String toString() {
+        return String.format("%-15s %-25s, %-15", venueID, location, capacity);
+    }
     
     
     
     //Add Venue method
     public static Venue addVenue() {
-        util.ClearScreen.cls();
         Scanner sc = new Scanner(System.in);
         String InVenue;
         String InLocation;
@@ -138,15 +140,11 @@ public class Venue {
         if (venueArrayList.isEmpty()) {
             System.out.println("============:   No venues found   :============" + "\n\n");
         } else {
+            System.out.println("=============:   Venue List   :=============");
+            System.out.printf("%-15s %-25s %-15s%n", "venueID", "location", "capacity");
+            System.out.println("______________________________________________________");
             for (Venue venue : venueArrayList) {
-                System.out.println("=============:   Venue Lsit   :=============" +"\n");
-                System.out.printf("%-15s, %-25s, %-15s", "venueID", "location", "capacity");
-                System.out.println("\n"+"______________________________________________________");
-                for (int i = 0; i < venueArrayList.size(); i++) {
-                    Venue venueView = venueArrayList.get(i);
-            System.out.printf("%-15s %-25s %-15s", venueView.getVenueID(), venueView.getLocation(), venueView.getCapacity() + "\n");
-        }
-            
+                System.out.printf("%-15s %-25s %-15s%n", venue.getVenueID(), venue.getLocation(), venue.getCapacity() + "\n");
             }
         }
     }
@@ -252,4 +250,21 @@ public class Venue {
             System.out.println("Invalid input. Please enter a value.");
         }
     }
+    
+    public static Venue existVenue(String targetVenueID){
+        String findVenue = null;
+        String findLocation = null;
+        int findCapacity = -1;
+        for (int i =0; i < venueArrayList.size(); i++) {
+            Venue venue = venueArrayList.get(i);
+            if (venue.getVenueID().equals(targetVenueID)) {
+                findVenue = venue.getVenueID();
+                findLocation = venue.getLocation();
+                findCapacity = venue.getCapacity();
+                return venue;
+            }
+        }
+            return null;
+        }
+    
 }

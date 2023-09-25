@@ -21,16 +21,17 @@ import java.util.Scanner;
 public class Seat {
     
     private String SeatID;
-    private String venue;
+    private Venue venue;
     private double price;
     private int status;
     private static ArrayList<Seat> seatArrayList = new ArrayList<Seat>();
+    static ArrayList<Venue> venueList = Venue.getVenueArrayList();
     
     
     public Seat() {
     }
 
-    public Seat(String SeatID, String venue, double price, int status) {
+    public Seat(String SeatID, Venue venue, double price, int status) {
         this.SeatID = SeatID;
         this.venue = venue;
         this.price = price;
@@ -48,12 +49,12 @@ public class Seat {
         this.SeatID = SeatID;
     }
 
-    public String getVenue() {
+    public Venue getVenue() {
         return venue;
     }
     
 
-    public void setVenue(String venue) {
+    public void setVenue(Venue venue) {
         this.venue = venue;
     }
 
@@ -79,6 +80,11 @@ public class Seat {
 
     public static void setSeatArrayList(ArrayList<Seat> seatArrayList) {
         Seat.seatArrayList = seatArrayList;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%-15s %-25s, %-15s, %-15s", SeatID, venue.getVenueID(), price, status);
     }
     
     
@@ -113,16 +119,28 @@ public class Seat {
             }
         }while (InSeat == null);
 
-        
-        //let let user input the venue and verify
-        do {
-            System.out.print("Please enter Venue (Venue ID): ");
+        //let user choose venue
+        Venue selectedVenue = null; // Initialize selectedVenue as null
+        System.out.println("\nChoose Venue ID: ");
+        Venue.viewAllVenue();
+        do{
+            System.out.print("Enter selection : ");
             InVenue = sc.nextLine().trim();
             if (InVenue.isEmpty()) {
-            System.out.println("Location cannot be empty. Please try again.");
+                System.out.println("Venue ID cannot be empty. Please try again.");
+            }else {
+                selectedVenue = Venue.existVenue(InVenue);
+                if (selectedVenue == null){
+                    System.out.println("Venue ID not found. Please a valid venue");
+                }
             }
-        } while (InVenue.isEmpty());
+        }while(selectedVenue == null);
+        String findVenue = selectedVenue.getVenueID();
+        String findLocation = selectedVenue.getLocation();
+        int findCapacity = selectedVenue.getCapacity();
 
+        Venue venue = new Venue(findVenue, findLocation, findCapacity);
+        
         
         //let user input the price and verify
         try {
@@ -149,7 +167,7 @@ public class Seat {
        
 
         // Create the temporary list for store Venue
-        Seat SList = new Seat(InSeat, InVenue, InPrice, InStatus);
+        Seat SList = new Seat(InSeat, venue, InPrice, InStatus);
 
         // Add the artist to the ArrayList
         Seat.seatArrayList.add(SList);
@@ -157,6 +175,7 @@ public class Seat {
 
         return SList; // Return the venue
     }
+
         
         
     
@@ -166,18 +185,14 @@ public class Seat {
             System.out.println("============:   No seat found   :============" + "\n\n");
             SeatManager.displayVenueScreen();
         } else {
+            System.out.println("=============:   Seat List   :=============" + "\n");
+            System.out.printf("%-15s %-15s %-15s %-15s%n", "seatID", "venueID", "price", "status");
+            System.out.println("\n" + "______________________________________________________");
             for (Seat seat : seatArrayList) {
-                System.out.println("=============:   Seat Lsit   :=============" +"\n");
-                System.out.printf("%-15s, %-15s, %-15s, %-15s", "seatID", "venue", "price", "status");
-                System.out.println("\n"+"______________________________________________________");
-                for (int i = 0; i < seatArrayList.size(); i++) {
-                    Seat seatView = seatArrayList.get(i);
-            System.out.printf("%-15s %-25s %-15s %-15s", seatView.getSeatID(), seatView.getVenue(), seatView.getPrice(), seatView.getStatus() + "\n");
-        }      
+                System.out.printf("%-15s %-15s %-15s %-15s%n", seat.getSeatID(), seat.getVenue().getVenueID(), seat.getPrice(), seat.getStatus() + "\n");
             }
         }
     }
-    
     
     //Modify seat mothod
     public static void modifySeat(){
@@ -205,7 +220,7 @@ public class Seat {
             // Seat found, allow modifications
             System.out.println("Current Venue Details:");
             System.out.println("Seat ID: " + seatArrayList.get(index).getSeatID());
-            System.out.println("Venue ID: " + seatArrayList.get(index).getVenue());
+            System.out.println("Venue ID: " + seatArrayList.get(index).getVenue().getVenueID());
             System.out.println("Location: " + seatArrayList.get(index).getPrice());
             System.out.println("Capacity: " + seatArrayList.get(index).getStatus());
 
@@ -224,45 +239,61 @@ public class Seat {
 
             // If the user wants to change the Seat ID, update it
             if (!newSeatID.isEmpty()) {
-                
-            }
-
-            System.out.print("Enter new Venue (press Enter to keep current): ");
-            String newVenue = sc.nextLine().trim();
-            if (!newVenue.isEmpty()) {
-                seatArrayList.get(index).setVenue(newVenue);
-            }
-
-            System.out.print("Enter new price (press Enter to keep current): ");
-            String newPriceStr = sc.nextLine().trim();
-            if (!newPriceStr.isEmpty()) {
-                try {
-                    int newPrice = Integer.parseInt(newPriceStr);
-                    if (newPrice > 0) {
-                        seatArrayList.get(index).setPrice(newPrice);
-                    } else {
-                        System.out.println("Invalid price input. Price must be greater than 0.");
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a numeric value for price.");
-                }
+                seatArrayList.get(index).setSeatID(newSeatID);
             }
             
-            System.out.print("Enter new status <1 || 2> (press Enter to keep current): ");
-            String newStatusStr = sc.nextLine().trim();
-            if (!newStatusStr.isEmpty()) {
-                try {
-                    int newStatus = Integer.parseInt(newStatusStr);
-                    if (newStatus < 0 || 3 > newStatus) {
-                        seatArrayList.get(index).setStatus(newStatus);
-                        System.out.println("Seat details modified successfully.");
-                    } else {
-                        System.out.println("Invalid Seat input. Price must be greater than 0.");
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a numeric value for status.");
+            
+            
+            
+        Venue selectedVenue = null; // Initialize selectedVenue as null
+        System.out.println("\nChoose Venue: ");
+        Venue.viewAllVenue();
+        do{
+            System.out.print("Enter selection : ");
+            String modifyVenue = sc.nextLine().trim();
+            if (!modifyVenue.isEmpty()) {
+                selectedVenue = Venue.existVenue(modifyVenue);
+                if (selectedVenue == null){
+                    System.out.println("Venue not found. Please a valid venue");
                 }
             }
+        }while(selectedVenue == null);
+        String findVenue = selectedVenue.getVenueID();
+        String findLocation = selectedVenue.getLocation();
+        int findCapacity = selectedVenue.getCapacity();
+
+        Venue venue = new Venue(findVenue, findLocation, findCapacity);
+
+        System.out.print("Enter new price (press Enter to keep current): ");
+        String newPriceStr = sc.nextLine().trim();
+        if (!newPriceStr.isEmpty()) {
+            try {
+                int newPrice = Integer.parseInt(newPriceStr);
+                if (newPrice > 0) {
+                    seatArrayList.get(index).setPrice(newPrice);
+                } else {
+                    System.out.println("Invalid price input. Price must be greater than 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a numeric value for price.");
+            }
+        }
+
+        System.out.print("Enter new status <1 || 2> (press Enter to keep current): ");
+        String newStatusStr = sc.nextLine().trim();
+        if (!newStatusStr.isEmpty()) {
+            try {
+                int newStatus = Integer.parseInt(newStatusStr);
+                if (newStatus < 0 || 3 > newStatus) {
+                    seatArrayList.get(index).setStatus(newStatus);
+                    System.out.println("Seat details modified successfully.");
+                } else {
+                    System.out.println("Invalid Seat input. Price must be greater than 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a numeric value for status.");
+            }
+        }
             
         }   
     }
@@ -307,33 +338,53 @@ public class Seat {
         }
         return null; // Return null if no matching SeatID is found.
     }
+}
+    
     
     //Get the releated seatID's price
-    public static double getSeatPrice(String SeatID, double Price){
-        double price;
-        for (int i = 0; i < seatArrayList.size(); i++){
-            Seat seat = seatArrayList.get(i);
-            if(seat.getSeatID().equals(SeatID)){
-            price = seat.getPrice();
-                 
-            return price; // Return the Seat object when a matching SeatID is found.
-            }
-        }
-        return 0;
-    }
+//    public static double getSeatPrice(String SeatID, double Price){
+//        double price;
+//        for (int i = 0; i < seatArrayList.size(); i++){
+//            Seat seat = seatArrayList.get(i);
+//            if(seat.getSeatID().equals(SeatID)){
+//            price = seat.getPrice();
+//                 
+//            return price; // Return the Seat object when a matching SeatID is found.
+//            }
+//        }
+//        return 0;
+//      }
     
     
-    //Check the related seatID's status (Is 1 or 2)
-    public static boolean checkStatus(String targetSeatID) {
-        for (int i = 0; i < seatArrayList.size(); i++) {
-            if (seatArrayList.get(i).getSeatID().equals(targetSeatID)) {
-                if (seatArrayList.get(i).getStatus() == 1){       
-                return true;
-                }
-            } 
-        }
-        return false;
-    }
+//    //Check the related seatID's status (Is 1 or 2)
+//    public static Seat checkStatus(String targetSeatID) {
+//        String findSeat = null;
+//        String findVenueID = null;
+//        double findPrice = -1;
+//        int findStatus = 0;
+//        for (int i =0; i < seatArrayList.size(); i++) {
+//            Seat seat = seatArrayList.get(i);
+//            if (seat.getSeatID().equals(targetSeatID)) {
+//                findSeat = seat.getSeatID();
+//                findVenueID = seat.getVenue().getVenueID();
+//                findPrice = seat.getPrice();
+//                findStatus = seat.getStatus();
+//                return seat;
+//            }
+//        }
+//        return null;
+//        }
+    
+
+//        for (int i = 0; i < seatArrayList.size(); i++) {
+//            if (seatArrayList.get(i).getSeatID().equals(targetSeatID)) {
+//                if (seatArrayList.get(i).getStatus() == 1){       
+//                return true;
+//                }
+//            } 
+//        }
+//        return false;
+    
 
     //CChange the status for seatID when ticket ........................
 //    public static void changeStatus(String targetSeatID){
@@ -344,4 +395,4 @@ public class Seat {
 //            }
 //        }
 //    }
-}
+

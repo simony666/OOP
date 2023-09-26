@@ -42,6 +42,4 @@ public abstract class Person {
         this.role = role;
     }
     
-    
-    
 }

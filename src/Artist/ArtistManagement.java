@@ -4,6 +4,8 @@ import util.ClearScreen;
 import util.Validator;
 import util.Database;
 
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -124,6 +126,7 @@ public class ArtistManagement {
         Artist artist = new Artist(artistName, bandName);
 
         // Insert the artist into the database and check if insertion was successful
+
         boolean insertionSuccessful = insertArtist(artist.getName(), artist.getBandName());
 
         if (insertionSuccessful) {
@@ -370,5 +373,6 @@ public class ArtistManagement {
         String sql = "DELETE FROM `Artist` WHERE `Id` = " + Id + ";";
         Database.runUpdate(sql);
     }
+
 
 }

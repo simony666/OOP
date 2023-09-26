@@ -213,7 +213,7 @@ public class Ticket {
             resultSet = Database.runQuery(query);
 
             while (resultSet.next()) {
-                String seatID = resultSet.getString("seatID");
+                String seatID = resultSet.getString("seat");
                 String venueID = resultSet.getString("venue");
                 
 

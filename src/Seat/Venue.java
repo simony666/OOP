@@ -374,7 +374,9 @@ public class Venue {
 
             // Create a prepared statement
             preparedStatement = connection.prepareStatement(query);
-
+            
+            
+            
             // Set the parameters for the prepared statement
             preparedStatement.setString(1, modifiedVenue.getLocation());
             preparedStatement.setInt(2, modifiedVenue.getCapacity());

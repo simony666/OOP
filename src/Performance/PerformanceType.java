@@ -14,4 +14,3 @@ public abstract class PerformanceType {
     public abstract String getTypeName();  
     public abstract String getDescription();  
 }
-

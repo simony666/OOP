@@ -25,7 +25,6 @@ public class mainScreen {
     public static void main(String[] args) {
         Database database = new Database();
         ClearScreen.cls();
-        //PerformanceManagement.displayPerformanceScreen();
         displayMainScreen();
         
     }

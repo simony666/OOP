@@ -25,6 +25,8 @@ public class Performance {
     private Artist artist;
     private int artistId;
     private String artistName;
+
+  
     public static ArrayList<Artist> getArtistList() {
         return artistList;
         //this.id = nextId++;

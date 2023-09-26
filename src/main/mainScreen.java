@@ -18,7 +18,7 @@ public class mainScreen {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-         Database database = new Database();
+        Database database = new Database();
         ClearScreen.cls();
         PerformanceManagement.displayPerformanceScreen();
         //displayMainScreen();

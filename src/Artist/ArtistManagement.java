@@ -4,7 +4,9 @@ import util.ClearScreen;
 import util.Validator;
 import util.Database;
 
-import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -96,7 +98,7 @@ public class ArtistManagement {
             } else if (!Validator.containsOnlyAlphabetic(artistName)) {
                 System.out.println("Artist Name must contain only letters. Please try again.");
                 artistName = ""; // Reset artistName to trigger the loop again
-            } else if (Database.artistNameExists(artistName)) {
+            } else if (artistNameExists(artistName)) {
                 System.out.println("Artist with the same name already exists in the database.");
                 return null; // Return null to indicate an error
             }
@@ -122,7 +124,7 @@ public class ArtistManagement {
         Artist artist = new Artist(artistName, bandName);
 
         // Insert the artist into the database and check if insertion was successful
-        boolean insertionSuccessful = Database.insertArtist(artist.getName(), artist.getBandName());
+        boolean insertionSuccessful = insertArtist(artist.getName(), artist.getBandName());
 
         if (insertionSuccessful) {
             // Add the artist to the ArrayList only if insertion was successful
@@ -139,9 +141,7 @@ public class ArtistManagement {
     // view artist
     public static void viewArtist() {
         // Call the method to retrieve data from the database
-        Database.getArtist();
-
-        ArrayList<Artist> artistList = Database.artistList;
+        ArrayList<Artist> artistList = getArtist();
 
         if (artistList.isEmpty()) {
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -168,8 +168,7 @@ public class ArtistManagement {
     // delete artist
     public static void deleteArtist(ArrayList<Artist> array) {
         // Call the method to retrieve data from the database
-        Database.getArtist();
-        ArrayList<Artist> artistList = Database.artistList;
+        ArrayList<Artist> artistList = getArtist();
         
         // capture user input of the artist Id to delete the field
         Scanner sc = new Scanner(System.in);
@@ -200,7 +199,7 @@ public class ArtistManagement {
                     System.out.println("The artist ID is not available. Please try it again");
                 } else {
                     artistList.remove(index);
-                    Database.deleteArtist(aId);
+                    deleteArtist(aId);
                     System.out.println("Remove artist's ID successfully");
                 }
             }
@@ -212,8 +211,8 @@ public class ArtistManagement {
     // Update artist
     public static void updateArtist(ArrayList<Artist> array) {
         // Call the method to retrieve data from the database
-        Database.getArtist();
-        ArrayList<Artist> artistList = Database.artistList;
+        
+        ArrayList<Artist> artistList = getArtist();
         
         Scanner sc = new Scanner(System.in);
 
@@ -252,7 +251,7 @@ public class ArtistManagement {
                 } else if (!Validator.containsOnlyAlphabetic(artistName)) {
                     System.out.println("Artist Name must contain only letters. Please try again.");
                     artistName = ""; // Reset artistName to trigger the loop again
-                } else if (Database.artistNameExists(artistName)) {
+                } else if (artistNameExists(artistName)) {
                     System.out.println("Artist with the same name already exists in the database.");
                     return; // Exit the method if the artist name already exists
                 }
@@ -274,12 +273,102 @@ public class ArtistManagement {
             selectedArtist.setBandName(bandName);
 
             // Corrected method call
-            Database.updateArtist(aId, artistName, bandName);
+            updateArtist(aId, artistName, bandName);
 
             System.out.println("Artist details updated successfully!");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid artist ID.");
         }
+    }
+    
+    public static ArrayList<Artist> getArtist() {
+        ArrayList<Artist> tempList = new ArrayList<>();
+        String sqlText = "SELECT * FROM `Artist`;";
+        ResultSet result = Database.runQuery(sqlText);
+        try {
+            while (result.next()) {
+                int id = result.getInt("id");
+                String name = result.getString("name");
+                String bandName = result.getString("bandName");
+
+                // Process the retrieved data here
+                Artist tempArtist = new Artist(id, name, bandName);
+                tempList.add(tempArtist);
+            }
+
+            return tempList;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return tempList;
+    }
+
+    
+    
+    public static boolean insertArtist(String name, String bandName) {
+        if (artistNameExists(name)) {
+            System.out.println("Artist with the same name already exists in the database.");
+            return false; // Don't insert if the name already exists
+        }
+
+        String sql = "INSERT INTO `Artist` (`name`, `bandName`) VALUES (?, ?);";
+        try {
+            PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql);
+            preparedStatement.setString(1, name);
+
+            // Conditionally set bandName to null if it's empty
+            if (bandName.isEmpty()) {
+                preparedStatement.setNull(2, java.sql.Types.VARCHAR); // Set bandName to NULL
+            } else {
+                preparedStatement.setString(2, bandName); // Set bandName to the provided value
+            }
+
+            int rowsInserted = preparedStatement.executeUpdate();
+
+            return rowsInserted > 0; //System.out.println("Artist added successfully");
+            //System.out.println("Failed to add artist");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public static boolean artistNameExists(String name) {
+        String query = "SELECT COUNT(*) FROM `Artist` WHERE `name` = \"" + name + "\"";
+        try {
+            ResultSet resultSet = Database.runQuery(query);
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public static void updateArtist(int Id, String newName, String newBandName) {
+        if (artistNameExists(newName)) {
+            System.out.println("Artist with the same name already exists in the database.");
+            return; // Exit the method if the name already exists
+        }
+
+        if (!Validator.containsOnlyAlphabetic(newName)) {
+            System.out.println("Artist Name must contain only letters. Please try again.");
+            return; // Exit the method if the name contains non-alphabetic characters
+        }
+
+        String sql = "UPDATE `Artist` SET `name` = \"" + newName + "\", `bandName` = \"" + newBandName + 
+                "\" WHERE `Id` = " + Id + ";";
+
+        Database.runUpdate(sql);
+    }
+    
+    public static void deleteArtist(String Id) {
+        String sql = "DELETE FROM `Artist` WHERE `Id` = " + Id + ";";
+        Database.runUpdate(sql);
     }
 
 

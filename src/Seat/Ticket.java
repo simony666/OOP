@@ -153,11 +153,11 @@ public class Ticket {
     public static void viewAllTicket() {
         if (ticketArrayList.isEmpty()) {
             SeatManager.displayTicketScreen();
-            System.out.println("============:   No ticket found   :============" + "\n\n");
+            System.out.println("================:    No ticket found    :===============" + "\n\n");
             return;
         } else {
-            SeatManager.displayTicketScreen();
-            System.out.println("=============:   Ticket List   :=============" + "\n");
+            ClearScreen.cls();
+            System.out.println("================:      Ticket List      :===============" + "\n");
             System.out.printf("%-15s %-15s %-15s %-15s%n", "TicketID", "SeatID", "VenueID", "Ticket Price");
             System.out.println("\n_________________________________________________________");
             for (Ticket ticket : ticketArrayList) {

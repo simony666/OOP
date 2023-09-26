@@ -22,7 +22,6 @@ import java.util.logging.Logger;
  */
 public class StaffManager {
     
-    private static ArrayList<Customer> cusArray = getCustomerList();
     private static ArrayList<User> userArray = getUserList();
     
     public StaffManager(){
@@ -210,8 +209,10 @@ public class StaffManager {
                         
                     case 3:
                         ClearScreen.cls();
+                        findUser();
                     case 4:
                         ClearScreen.cls();
+                        modUser();
                     case 5:
                         return;
                         
@@ -226,7 +227,7 @@ public class StaffManager {
         }while(true);
     }
     
-    private static void moduser() {
+    private static void modUser() {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("=====================================");
@@ -255,7 +256,7 @@ public class StaffManager {
     private static void getData() {
         Scanner sc = new Scanner(System.in);
         System.out.println("=====================================");
-        System.out.println("========      Get Data     ===========");
+        System.out.println("========      Get Data     ==========");
         System.out.println("=====================================");
 
         do {
@@ -314,7 +315,7 @@ public class StaffManager {
     private static void modifyUser(User user) {
         Scanner sc = new Scanner(System.in);
         System.out.println("=====================================");
-        System.out.println("========    Modify User    ===========");
+        System.out.println("========    Modify User    ==========");
         System.out.println("=====================================");
         System.out.println("User Info:");
         System.out.println("Username: " + user.getUsername());
@@ -403,7 +404,7 @@ public class StaffManager {
 
         do {
             System.out.println("=====================================");
-            System.out.println("========     List Users     ==========");
+            System.out.println("========     List Users     =========");
             System.out.println("=====================================");
 
             int startIndex = (currentPage - 1) * pageSize;
@@ -454,7 +455,7 @@ public class StaffManager {
 
         do {
             System.out.println("=====================================");
-            System.out.println("========    Find User     ============");
+            System.out.println("========    Find User     ===========");
             System.out.println("=====================================");
 
             String searchTerm;
@@ -492,28 +493,6 @@ public class StaffManager {
                     System.out.println("Invalid choice. Please enter 'S' to search with a new keyword or 'E' to exit to the Main Menu.");
             }
         } while (true);
-    }
-
-    private static ArrayList<Customer> getCustomerList(){
-        ArrayList<Customer> tempList = new ArrayList<>();
-        
-        String sqlText = "select * from `User` where `role` = \"Customer\";";
-        ResultSet result = Database.runQuery(sqlText);
-        try {
-            while(result.next()){
-                String username = result.getString("username");
-                String name = result.getString("name");
-                String email = result.getString("email");
-                Role role = Role.Customer;
-                
-                Customer c = new Customer(username,email,name,role);
-                tempList.add(c);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        
-        return tempList;
     }
     
     private static ArrayList<User> getUserList(){

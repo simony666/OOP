@@ -23,6 +23,7 @@ public class SeatManager {
 
 
     public static void main(String[] args){
+        new Database();
         displaySeatMainScreen();
                 
 
@@ -47,6 +48,9 @@ public class SeatManager {
 
             System.out.print("Please enter your selection: ");
             String input = sc.nextLine();
+            Venue.getAllVenuesFromDatabase();
+            Seat.getAllSeatFromDatabase();
+            Ticket.getAllTicketFromDatabase();
 
             // Symbol checking
             if (Validator.containsSymbol(input)) {

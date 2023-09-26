@@ -1,8 +1,15 @@
 package Seat;
 
 import java.util.ArrayList;
+import util.Database;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.List;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 /**
  *
  * @author QL
@@ -126,6 +133,10 @@ public class Venue {
 
         // Create the temporary list for store Venue
         Venue VList = new Venue(InVenue, InLocation, InCapacity);
+        boolean addNewVenueToDB = insertVenueIntoDatabase(VList);
+        if (addNewVenueToDB = true){
+            System.out.println("New venue successful add in to database.");
+        }
 
         // Add the artist to the ArrayList
         Venue.venueArrayList.add(VList);
@@ -216,6 +227,12 @@ public class Venue {
                     System.out.println("Invalid input. Please enter a numeric value for capacity.");
                 }
             }
+            boolean modifyVenueInDB = modifyVenueInDatabase(venueArrayList.get(index));
+            if(modifyVenueInDB){
+                System.out.println("Modify venue in database successful");
+            }else {
+                System.out.println("Failed to modify venue in the database");
+            }
         }   
     }
     
@@ -243,6 +260,10 @@ public class Venue {
             } else {
                 venueArrayList.remove(index);
                 System.out.println("Remove venue ID successfully");
+                boolean deleteVenueInDB = deleteVenueFromDatabase(deleSc);
+                if (deleteVenueInDB = true){
+                    System.out.println("Delete venue in database successful.");
+                }
             }
             
         } catch (NumberFormatException e) {
@@ -264,10 +285,167 @@ public class Venue {
             }
         }
             return null;
+    }
+    
+
+    // Method to retrieve venue data from the database
+    public static List<Venue> getAllVenuesFromDatabase() {
+        List<Venue> venues = new ArrayList<>();
+        venueArrayList.clear();
+        ResultSet resultSet = null;
+
+        try {
+
+            String query = "SELECT * FROM Venue";
+            resultSet = Database.runQuery(query);
+            // Iterate through the result set and create Venue objects
+            while (resultSet.next()) {
+                String venueID = resultSet.getString("venueID");
+                String location = resultSet.getString("location");
+                int capacity = resultSet.getInt("capacity");
+
+                // Create a Venue object and add it to the list
+                Venue venue = new Venue(venueID, location, capacity);
+                venue.venueArrayList.add(venue);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return venues;
+    }
+    
+    
+    // Method to insert a new venue into the database
+    public static boolean insertVenueIntoDatabase(Venue newVenue) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to insert a new venue
+            String query = "INSERT INTO Venue (venueID, location, capacity) VALUES (?, ?, ?)";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameters for the prepared statement
+            preparedStatement.setString(1, newVenue.getVenueID());
+            preparedStatement.setString(2, newVenue.getLocation());
+            preparedStatement.setInt(3, newVenue.getCapacity());
+
+            // Execute the INSERT query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the insertion was successful
+            if (rowsAffected > 0) {
+                return true; // Insertion successful
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-    public Object getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return false; // Insertion failed
     }
+    
+    
+    //modify venue in database
+    public static boolean modifyVenueInDatabase(Venue modifiedVenue) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to update the venue
+            String query = "UPDATE Venue SET location = ?, capacity = ? WHERE venueID = ?";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameters for the prepared statement
+            preparedStatement.setString(1, modifiedVenue.getLocation());
+            preparedStatement.setInt(2, modifiedVenue.getCapacity());
+            preparedStatement.setString(3, modifiedVenue.getVenueID());
+
+            // Execute the UPDATE query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the update was successful
+            if (rowsAffected > 0) {
+                return true; // Update successful
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // Update failed
+    }
+    
+    //delete venue in database
+    public static boolean deleteVenueFromDatabase(String venueIDToDelete) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to delete the venue by venueID
+            String query = "DELETE FROM Venue WHERE venueID = ?";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameter for the prepared statement (venueID)
+            preparedStatement.setString(1, venueIDToDelete);
+
+            // Execute the DELETE query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the deletion was successful
+            if (rowsAffected > 0) {
+                return true; // Deletion successful
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // Deletion failed
+    }
+    
+    
+    
+
     
 }

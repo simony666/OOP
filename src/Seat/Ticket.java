@@ -211,16 +211,15 @@ public class Ticket {
 
             String query = "SELECT * FROM Ticket";
             resultSet = Database.runQuery(query);
-            // Iterate through the result set and create Ticket objects
+
             while (resultSet.next()) {
-                int ticketID = resultSet.getInt("ticketID");
                 String seatID = resultSet.getString("seatID");
                 String venueID = resultSet.getString("venue");
                 
 
                 // Create a ticket object and add it to the list
-                Ticket ticket = new Seat(ticketID, Seat.existSeat(seatID), Venue.existVenue(venueID));
-                Ticket.ticetArrayList.add(ticket);
+                Ticket newTicket = new Ticket(Seat.existSeat(seatID), Venue.existVenue(venueID));
+                Ticket.ticketArrayList.add(newTicket);
 
             }
         } catch (SQLException e) {

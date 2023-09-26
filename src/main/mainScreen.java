@@ -30,8 +30,8 @@ public class mainScreen {
     }
 
 
-    public static void setUsername(String username) {
-        username = username;
+    public static void setUsername(String u) {
+        mainScreen.username = u;
     }
     
     

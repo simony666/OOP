@@ -62,11 +62,11 @@ public class Ticket {
 
     
 
-    public static boolean addTicket(Seat seat, Venue venue){
+    public static Ticket addTicket(Seat seat, Venue venue){
         //Yong Choy Mun
         Ticket ticket = new Ticket(seat, venue);
         Ticket.ticketArrayList.add(ticket);
-        return true;
+        return ticket;
     }
     
     //Add Ticket Method
@@ -135,7 +135,6 @@ public class Ticket {
     public static void viewAllTicket() {
     if (ticketArrayList.isEmpty()) {
         System.out.println("============:   No ticket found   :============" + "\n\n");
-        SeatManager.displayTicketScreen();
     } else {
         System.out.println("=============:   Ticket List   :=============" + "\n");
         System.out.printf("%-15s %-15s %-15s %-15s%n", "TicketID", "SeatID", "VenueID", "Ticket Price");

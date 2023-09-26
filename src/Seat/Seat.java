@@ -338,6 +338,10 @@ public class Seat {
         }
         return null; // Return null if no matching SeatID is found.
     }
+
+    public String getId() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
     
     

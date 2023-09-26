@@ -62,6 +62,12 @@ public class Ticket {
 
     
 
+    public static boolean addTicket(Seat seat, Venue venue){
+        //Yong Choy Mun
+        Ticket ticket = new Ticket(seat, venue);
+        Ticket.ticketArrayList.add(ticket);
+        return true;
+    }
     
     //Add Ticket Method
     public static Ticket addTicket(){

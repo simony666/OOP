@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import util.ClearScreen;
 /**
  *
  * @author QL
@@ -75,13 +76,18 @@ public class Venue {
         String InVenue;
         String InLocation;
         int InCapacity;
+        ClearScreen.cls();
         
         //let user input the venueID and verify
         do {
+            System.out.println("===================================");
+            System.out.println("=========:    Add Venue    :=======");
+            System.out.println("===================================");
             boolean idExist = false;
             System.out.print("Please enter Venue ID: ");
             InVenue = sc.nextLine().trim();
             if (InVenue.isEmpty()) {
+                ClearScreen.cls();
                 System.out.println("Venue ID cannot be empty. Please try again.");
                 InVenue = null;
             }else 
@@ -93,6 +99,7 @@ public class Venue {
                     }
                 }
             if (idExist) {
+                ClearScreen.cls();
                 System.out.println("Venue ID already exists. Please choose a different Venue ID.");
                 InVenue = null; // Set InVenue to null to indicate an error
             }
@@ -147,12 +154,13 @@ public class Venue {
     
     //View all venue
     public static void viewAllVenue() {
+        ClearScreen.cls();
         if (venueArrayList.isEmpty()) {
             System.out.println("============:   No venues found   :============" + "\n\n");
         } else {
-            System.out.println("=============:   Venue List   :=============");
+            System.out.println("=================:     Venue List      :=================");
             System.out.printf("%-15s %-25s %-15s%n", "venueID", "location", "capacity");
-            System.out.println("______________________________________________________");
+            System.out.println("_________________________________________________________");
             for (Venue venue : venueArrayList) {
                 System.out.printf("%-15s %-25s %-15s%n", venue.getVenueID(), venue.getLocation(), venue.getCapacity() + "\n");
             }
@@ -162,8 +170,12 @@ public class Venue {
     //Modify venue method
     public static void modifyVenue() {
         Scanner sc = new Scanner(System.in);
-
+        ClearScreen.cls();
         viewAllVenue();
+        
+        System.out.println("=====================================");
+        System.out.println("========:   Modify Venue   :=========");
+        System.out.println("=====================================");
 
         // Prompt the user to enter the Venue ID to modify
         System.out.print("\n" + "Please enter the Venue ID to modify: ");
@@ -180,7 +192,9 @@ public class Venue {
         }
 
         if (index == -1) {
+            ClearScreen.cls();
             System.out.println("Venue with ID '" + modifySc + "' not found.");
+            return;
         } else {
             // Venue found, allow modifications
             System.out.println("Current Venue Details:");
@@ -196,6 +210,7 @@ public class Venue {
             for (int i = 0; i < venueArrayList.size(); i++) {
                 Venue venue = venueArrayList.get(i);
                 if (venue.getVenueID().equals(newVenueID) && !newVenueID.equals(modifySc)) {
+                    ClearScreen.cls();
                     System.out.println("Venue with ID '" + newVenueID + "' already exists. Please choose a different Venue ID.");
                     return; // Return early if the new Venue ID already exists
                 }
@@ -244,6 +259,9 @@ public class Venue {
         viewAllVenue();
 
         try {
+            System.out.println("================================================");
+            System.out.println("===========:      Delete Venue      :===========");
+            System.out.println("================================================");
             System.out.print("Please enter the Venue ID that you want to delete: ");
             String deleSc = sc.nextLine();
             int index = -1;
@@ -256,6 +274,7 @@ public class Venue {
             }
 
             if (index == -1) {
+                ClearScreen.cls();
                 System.out.println("The venue ID is not exits. Please try it again");
             } else {
                 venueArrayList.remove(index);
@@ -267,6 +286,7 @@ public class Venue {
             }
             
         } catch (NumberFormatException e) {
+            ClearScreen.cls();
             System.out.println("Invalid input. Please enter a value.");
         }
     }
@@ -420,20 +440,16 @@ public class Venue {
             // Create a prepared statement
             preparedStatement = connection.prepareStatement(query);
 
-            // Set the parameter for the prepared statement (venueID)
             preparedStatement.setString(1, venueIDToDelete);
 
-            // Execute the DELETE query
             int rowsAffected = preparedStatement.executeUpdate();
 
-            // Check if the deletion was successful
             if (rowsAffected > 0) {
                 return true; // Deletion successful
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); 
         } finally {
-            // Close resources in a finally block to ensure they are always closed
             try {
                 if (preparedStatement != null) {
                     preparedStatement.close();
@@ -443,7 +459,7 @@ public class Venue {
             }
         }
 
-        return false; // Deletion failed
+        return false;
     }
     
     

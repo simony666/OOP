@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import util.ClearScreen;
 
 /**
  *
@@ -89,13 +90,18 @@ public class Ticket {
         System.out.println("\nChoose Seat ID: ");
         Seat.viewAllSeat();
         do{
+            System.out.println("===================================");
+            System.out.println("========:    Add Ticket     :======");
+            System.out.println("===================================");
             System.out.print("Enter selection : ");
             InSeatID = sc.nextLine().trim();
             if (InSeatID.isEmpty()) {
+                ClearScreen.cls();
                 System.out.println("Seat ID cannot be empty. Please try again.");
             }else {
                 selectedSeat = Seat.existSeat(InSeatID);
                 if (selectedSeat == null){
+                    ClearScreen.cls();
                     System.out.println("Seat ID not found. Please a valid venue");
                 }else{
                     if (selectedSeat.getStatus() == 2) { //check status if status is 2 cannot process
@@ -112,6 +118,7 @@ public class Ticket {
                         }
                     }
                     if (seatAlreadyHasTicket) {
+                        ClearScreen.cls();
                         System.out.println("This seat already has a ticket. Cannot create another ticket for the same seat.");
                         selectedSeat = null; // Reset selectedSeat to null
                     }
@@ -144,17 +151,19 @@ public class Ticket {
     
     //view Ticket method
     public static void viewAllTicket() {
-    if (ticketArrayList.isEmpty()) {
-        System.out.println("============:   No ticket found   :============" + "\n\n");
-        SeatManager.displayTicketScreen();
-    } else {
-        System.out.println("=============:   Ticket List   :=============" + "\n");
-        System.out.printf("%-15s %-15s %-15s %-15s%n", "TicketID", "SeatID", "VenueID", "Ticket Price");
-        System.out.println("\n_________________________________________________________");
-        for (Ticket ticket : ticketArrayList) {
-            System.out.printf("%-15s %-15s %-15s %-15s%n", ticket.getTicketID(), ticket.getSeat().getSeatID(), ticket.getSeat().getVenue().getVenueID(), ticket.getSeat().getPrice());
+        if (ticketArrayList.isEmpty()) {
+            SeatManager.displayTicketScreen();
+            System.out.println("================:    No ticket found    :===============" + "\n\n");
+            return;
+        } else {
+            ClearScreen.cls();
+            System.out.println("================:      Ticket List      :===============" + "\n");
+            System.out.printf("%-15s %-15s %-15s %-15s%n", "TicketID", "SeatID", "VenueID", "Ticket Price");
+            System.out.println("\n_________________________________________________________");
+            for (Ticket ticket : ticketArrayList) {
+                System.out.printf("%-15s %-15s %-15s %-15s%n", ticket.getTicketID(), ticket.getSeat().getSeatID(), ticket.getSeat().getVenue().getVenueID(), ticket.getSeat().getPrice());
+            }
         }
-    }
 }
 
     //Delete ticket Method
@@ -164,6 +173,9 @@ public class Ticket {
         viewAllTicket();
 
         try {
+            System.out.println("================================================");
+            System.out.println("==========:      Delete Ticket       :==========");
+            System.out.println("================================================");
             System.out.print("Please enter the Ticket ID that you want to delete: ");
             int deleSc = sc.nextInt();
             int index = -1;
@@ -177,6 +189,7 @@ public class Ticket {
 
             if (index == -1) {
                 System.out.println("The ticket ID is not exits. Please try it again");
+                return;
             } else {
                 ticketArrayList.remove(index);
                 System.out.println("Remove ticket ID successfully");

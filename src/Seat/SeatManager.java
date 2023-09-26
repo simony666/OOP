@@ -39,8 +39,8 @@ public class SeatManager {
             System.out.println("\n" + "=======================================");
             System.out.println("========   Seat Management  ===========");
             System.out.println("=======================================");
-            System.out.println("======= 1) Manage Venue         ========");
-            System.out.println("======= 2) Manage Seat        ========");
+            System.out.println("======= 1) Manage Venue       =========");
+            System.out.println("======= 2) Manage Seat        =========");
             System.out.println("======= 3) Manage Ticket      =========");
             System.out.println("======= 4) Back to Admin Page =========");
             System.out.println("======= 5) Exit               =========");
@@ -62,18 +62,23 @@ public class SeatManager {
 
                     switch (selection) {
                         case 1:
+                            ClearScreen.cls();
                             displayVenueScreen();
                             break;
                         case 2:
+                            ClearScreen.cls();
                             displaySeatScreen(); 
                             break;
                         case 3:
+                            ClearScreen.cls();
                             displayTicketScreen();
                             break;
                         case 4:
+                            ClearScreen.cls();
                             main.mainScreen.displayAdmin();
                             break;
                         case 5:
+                            ClearScreen.cls();
                             System.out.println("Thanks for using");
                             System.exit(0);
                             break;
@@ -90,7 +95,6 @@ public class SeatManager {
     public static void displaySeatScreen() {
         Scanner sc = new Scanner(System.in);
         
-        ClearScreen.cls();
         
         while (true) {
             System.out.println("\n" + "===========================================");
@@ -175,7 +179,6 @@ public class SeatManager {
                             break;
                         case 2:
                             Venue.viewAllVenue();
-                            SeatManager.displayVenueScreen();
                             break;
                         case 3:
                             Venue.modifyVenue(); 
@@ -231,7 +234,6 @@ public class SeatManager {
                             break;
                         case 2:
                             Ticket.viewAllTicket();
-                            SeatManager.displayTicketScreen();
                             break;
                         case 3:
                             Ticket.deleteTicket(ticketList);

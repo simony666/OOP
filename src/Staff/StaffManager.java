@@ -49,24 +49,20 @@ public class StaffManager {
                 
                 int selection = Integer.parseInt(input);
         
-                // Use switch case to complete the selection operation
                 switch(selection){
 
-                    // Login
                     case 1:
                         ClearScreen.cls();
                         return Login();
 
-                    // Manage Performance     
                     case 2:
                         ClearScreen.cls();
                         return SignUp();
-                        //break;
                         
                     case 3:
                         ClearScreen.cls();
                         return false;
-                    // other than 1 to 7 input 
+
                     default:
                         System.out.println("Invalid Range, Please enter number between 1 to 6");
                         staffEnter();
@@ -76,9 +72,6 @@ public class StaffManager {
                 System.out.println("Invalid input. Please enter a numeric value.");
             }
         }while(true);
-        
-        
-        //return false;
     }
     
     private static boolean Login(){
@@ -182,9 +175,6 @@ public class StaffManager {
     }
     
     public static void manageCus(){
-        //display screen
-        //func: get data,set role,list customer,find customer
-        
         do{
         System.out.println("=====================================");
         System.out.println("======== Customer Management ========");
@@ -207,7 +197,6 @@ public class StaffManager {
                 
                 int selection = Integer.parseInt(input);
         
-                // Use switch case to complete the selection operation
                 switch(selection){
 
                     case 1:
@@ -244,13 +233,11 @@ public class StaffManager {
         System.out.println("========    Modify User    ==========");
         System.out.println("=====================================");
 
-        // Ask the user to enter a username
         System.out.print("Please enter the username to modify: ");
         String username = sc.nextLine();
 
         User foundUser = null;
 
-        // Find the user in the userArray
         for (User user : userArray) {
             if (user.getUsername().equalsIgnoreCase(username)) {
                 foundUser = user;
@@ -259,7 +246,6 @@ public class StaffManager {
         }
 
         if (foundUser != null) {
-            // Call the modifyUser function to modify the user's information
             modifyUser(foundUser);
         } else {
             System.out.println("User not found.");
@@ -286,14 +272,12 @@ public class StaffManager {
             }
 
             if (foundUser != null) {
-                // Display user information
                 System.out.println("User Info:");
                 System.out.println("Username: " + foundUser.getUsername());
                 System.out.println("Name: " + foundUser.getName());
                 System.out.println("Email: " + foundUser.getEmail());
                 System.out.println("Role: " + foundUser.getRole());
 
-                // Ask if the user wants to modify or search for another user
                 System.out.print("(M)odify User, (S)earch another User or (B)ack to Main Menu");
                 String opt = sc.nextLine();
 
@@ -310,7 +294,6 @@ public class StaffManager {
                         System.out.println("Invalid option. Please enter 'M','S'or'B'.");
                 }
             } else {
-                // User not found
                 System.out.println("User not found.");
                 System.out.print("(S)earch another User or (B)ack to Main Menu: ");
                 String opt = sc.nextLine();
@@ -365,7 +348,7 @@ public class StaffManager {
                 case "3":
                     System.out.print("Enter new role (Admin, Artist, Customer): ");
                     String newRoleStr = sc.nextLine();
-                    Role newRole = Role.Customer; // Default role
+                    Role newRole = Role.Customer;
                     switch (newRoleStr.toLowerCase()) {
                         case "admin":
                             newRole = Role.Admin;
@@ -387,12 +370,11 @@ public class StaffManager {
                     user.setEmail(newEmail);
                     break;
                 case "5":
-                    return; // Cancel and return to the previous menu
+                    return;
                 default:
                     System.out.println("Invalid choice. Please enter a valid option.");
             }
 
-            // Update the user information in the database
             String sqlText = "update `User` set " +
                              "`password` = '" + user.getPassword() + "', " +
                              "`name` = '" + user.getName() + "', " +
@@ -424,28 +406,23 @@ public class StaffManager {
             System.out.println("========     List Users     ==========");
             System.out.println("=====================================");
 
-            // Calculate the starting index and ending index for the current page
             int startIndex = (currentPage - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, userArray.size());
 
-            // Display table headers
             System.out.println(String.format("| %-15s | %-25s | %-30s | %-15s |", "Username", "Name", "Email", "Role"));
             System.out.println("| --------------- | ------------------------- | ---------------------------------- | --------------- |");
 
-        // Display user information for the current page
             for (int i = startIndex; i < endIndex; i++) {
                 User user = userArray.get(i);
                 System.out.println(String.format("| %-15s | %-25s | %-30s | %-15s |", 
                     user.getUsername(), user.getName(), user.getEmail(), user.getRole()));
             }
 
-            // Display current page and total pages
             int totalPages = (int) Math.ceil((double) userArray.size() / pageSize);
             System.out.println("=====================================");
             System.out.println("Page: " + currentPage + "/" + totalPages);
             System.out.println("=====================================");
 
-            // Display options to navigate between pages and quit
             System.out.print("(P)revious page | (N)ext page | (Q)uit: ");
             String choice = sc.nextLine();
 
@@ -465,7 +442,7 @@ public class StaffManager {
                     }
                     break;
                 case "q":
-                    return; // Quit and return to the previous menu
+                    return;
                 default:
                     System.out.println("Invalid choice. Please enter 'P' for previous, 'N' for next, or 'Q' to quit.");
             }
@@ -486,7 +463,6 @@ public class StaffManager {
                 searchTerm = sc.nextLine().trim();
             } while (searchTerm.length() < 3);
 
-            // Display table headers
             System.out.println(String.format("| %-15s | %-25s | %-30s | %-15s |", "Username", "Name", "Email", "Role"));
             System.out.println("| --------------- | ------------------------- | ---------------------------------- | --------------- |");
 
@@ -504,16 +480,14 @@ public class StaffManager {
                 System.out.println("No matching records found.");
             }
 
-            // Display options to search again or exit
             System.out.print("(S)earch next keyword | (E)xit to Main Menu: ");
             String choice = sc.nextLine();
 
             switch (choice.toLowerCase()) {
                 case "s":
-                    // Continue searching with a new keyword
                     break;
                 case "e":
-                    return; // Exit to the main menu
+                    return;
                 default:
                     System.out.println("Invalid choice. Please enter 'S' to search with a new keyword or 'E' to exit to the Main Menu.");
             }

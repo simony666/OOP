@@ -25,7 +25,6 @@ public class ScheduleManagement {
     static ArrayList<Schedule> scheduleList = Database.scheduleList;
     static ArrayList<Performance> pfmArrayList = Database.pfmList; 
     static ArrayList<Artist> artistArrayList = Database.artistList;
-    private static int nextId = 1; // Initialize nextId
 
     // Display Schedule Screen
     public static void displayScheduleScreen() {

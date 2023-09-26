@@ -8,7 +8,7 @@ package Performance;
  *
  * @author Zy
  */
-public class PopPerformance extends PerformanceType{
+public class PopPerformance implements PerformanceType{
     private String typeName = "Pop"; // Type name for Dance Performance
     private String description = "Artists or groups known for their catchy songs, choreographed dance routines, and a focus on entertainment and showmanship";
     

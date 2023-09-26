@@ -30,6 +30,7 @@ public class PerformanceManagement{
         performanceTypes.add(new MusicPerformance());
         performanceTypes.add(new PopPerformance());
     }
+
     
     // display performance screen
     public static void displayPerformanceScreen(){

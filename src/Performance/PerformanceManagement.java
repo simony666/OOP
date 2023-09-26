@@ -19,10 +19,14 @@ import util.Database;
 import Artist.Artist;
 import Artist.ArtistManagement;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class PerformanceManagement{
     // performance and Artist array List
-    static ArrayList<Performance> pfmArrayList = Database.pfmList; 
-    static ArrayList<Artist> artistArrayList = Database.artistList;
+    static ArrayList<Performance> pfmArrayList = getPfm(); 
+    static ArrayList<Artist> artistArrayList = ArtistManagement.getArtist();
     private static List<PerformanceType> performanceTypes = new ArrayList<>();
 
     static {
@@ -201,7 +205,7 @@ public class PerformanceManagement{
             pfmArrayList.add(p);
 
             // Insert performance into the database
-            Database.insertPerformance(pfmName, pfmType, artistId);
+            insertPerformance(pfmName, pfmType, artistId);
             System.out.println("Performance added successfully");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a numeric value for the artist ID.");
@@ -359,7 +363,7 @@ public class PerformanceManagement{
             selectedPfm.setArtistId(artistId);
 
             // Update the performance in the database
-            Database.updatePerformance(pId, pfmName, pfmType, artistName,artistId);
+            updatePerformance(pId, pfmName, pfmType, artistName,artistId);
             System.out.println("Performance details updated successfully!");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid performance ID.");
@@ -400,13 +404,121 @@ public class PerformanceManagement{
                     
                 } else {
                     pfmArrayList.remove(index);
-                    Database.deletePerformance(pId);
+                    deletePerformance(pId);
                     System.out.println("Remove performance's ID successfully");
                 }
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a numeric value.");
         }
+    }
+    
+    // Performance
+    public static ArrayList<Performance> getPfm() {
+        ArrayList<Performance> tempList = new ArrayList<>();
+        String sqlText = "SELECT * FROM `Performance`;";
+        ResultSet result = Database.runQuery(sqlText);
+        try {
+            while (result.next()) {
+            int id = result.getInt("Id");
+            String name = result.getString("performanceName");
+            String type = result.getString("performanceType");
+            int artistId = result.getInt("artistId"); // Get the artist's ID from the result
+
+            // Call the getArtistName method to retrieve the artist's name
+            String artistName = getArtistName(artistId);
+
+            // Process the retrieved data here
+            Performance tempPfm = new Performance(id, name, type, artistId, artistName);
+            tempList.add(tempPfm);
+        }
+          return tempList;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return tempList;
+    }
+
+
+
+    
+public static void insertPerformance(String performanceName, String performanceType, int artistId) {
+    String sql = "INSERT INTO `Performance` (`performanceName`, `performanceType`, `artistName`, `artistId`) VALUES (?, ?, ?, ?)";
+
+    // Fetch the artist name based on the artist ID
+    String artistName = getArtistName(artistId);
+    
+    try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+        preparedStatement.setString(1, performanceName);
+        preparedStatement.setString(2, performanceType);
+        preparedStatement.setString(3, artistName);
+        preparedStatement.setInt(4, artistId);
+
+        preparedStatement.executeUpdate();
+        // System.out.println("Performance added successfully. Rows affected: " + result);
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+
+    public static String getArtistName(int artistId) {
+        // Implement logic to fetch the artist name based on artistId from your artistList
+        // Return the artist name or an appropriate default value if not found
+        for (Artist a : artistArrayList) {
+            if (a.getId() == artistId) {
+                return a.getName();
+            }
+        }
+        return ""; // Artist with the given ID not found, return an appropriate default value
+    }
+
+    private static Performance findPerformanceById(int performanceId) {
+            // Implement logic to search for the performance in your performanceList
+            // Return the found Performance object or null if not found
+            for (Performance p : pfmArrayList) {
+                if (p.getId() == performanceId) {
+                    return p; // Found the performance by ID
+                }
+            }
+            return null;
+    }
+    
+    public static void updatePerformance(int performanceId, String newName, String newType, String artistName, int artistId) {
+        Performance performanceToUpdate = findPerformanceById(performanceId);
+        // Fetch the artist name based on the artist ID
+        String aName = getArtistName(artistId);
+        
+        if (performanceToUpdate != null) {
+             String sql = "UPDATE Performance SET performanceName = ?, performanceType = ?, artistName = ? WHERE id = ?";
+            
+                try (
+                PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+                preparedStatement.setString(1, newName);
+                preparedStatement.setString(2, newType);
+                preparedStatement.setString(3, aName);
+                preparedStatement.setInt(4, performanceId);
+
+                int rowsUpdated = preparedStatement.executeUpdate();
+                if (rowsUpdated > 0) {
+                    // System.out.println("Performance updated successfully. Rows affected: " + rowsUpdated);
+                } else {
+                    System.out.println("No performance found with ID " + performanceId);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // Handle the exception appropriately, e.g., log it or show an error message to the user.
+            }
+             
+        } else {
+            System.out.println("No performance found with ID " + performanceId);
+        }
+       
+    }
+
+    public static void deletePerformance(String Id) {
+        String sql = "DELETE FROM `Performance` WHERE `Id` = " + Id + ";";
+        Database.runUpdate(sql);
     }
     
 }

@@ -11,11 +11,12 @@ package Performance;
 import java.util.ArrayList;
 import util.Database;
 import Artist.Artist;
+import Artist.ArtistManagement;
 
 public class Performance {
     // Performance ArrayList
-    private static ArrayList<Artist> artistList = Database.artistList;
-    private static ArrayList<Performance> pfmArrayList = new ArrayList<Performance>();
+    private static ArrayList<Artist> artistList = ArtistManagement.getArtist();
+    private static ArrayList<Performance> pfmArrayList = PerformanceManagement.getPfm();
 
     // Non-static fields
     private int id;
@@ -24,7 +25,8 @@ public class Performance {
     private Artist artist;
     private int artistId;
     private String artistName;
-    
+
+  
     public static ArrayList<Artist> getArtistList() {
         return artistList;
         //this.id = nextId++;

@@ -23,7 +23,6 @@ public class Schedule {
     private int pId;
 
     private static ArrayList<Schedule> scheduleArrayList = new ArrayList<Schedule>();
-    private static ArrayList<Performance> pfmArrayList = Database.pfmList;
 
     public Schedule() {
     }

@@ -21,8 +21,8 @@ public class mainScreen {
     public static void main(String[] args) {
         Database database = new Database();
         ClearScreen.cls();
-        PerformanceManagement.displayPerformanceScreen();
-        //displayMainScreen();
+        //PerformanceManagement.displayPerformanceScreen();
+        displayMainScreen();
         
     }
     
@@ -150,8 +150,8 @@ public static void displayAdmin(){
                     // Manage Customer     
                     case 6:
                         ClearScreen.cls();
-                         System.out.println("Manage Customer");
-                         break;
+                        StaffManager.manageCus();
+                        break;
 
                    // Back to main menu    
                     case 7:

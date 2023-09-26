@@ -238,9 +238,9 @@ public class CustomerManager {
         System.out.printf("%-12s %-10s %-10s\n", "Seat Number", "Price", "Status");
 
         for (Seat seat : seats) {
-            if (seat.getVenue().getId() == selectedVenue.getId() && seat.getStatus() == 1) {
+            if (seat.getVenue().getVenueID() == selectedVenue.getVenueID() && seat.getStatus() == 1) {
                 System.out.printf("%-12s $%-10s %-10s\n",
-                        seat.getId(), seat.getPrice(), "Avaiable");
+                        seat.getSeatID(), seat.getPrice(), "Avaiable");
             }
         }
         
@@ -292,8 +292,8 @@ public class CustomerManager {
         System.out.println("Seat Number\tPrice\tStatus");
 
         for (Seat seat : seats) {
-            if (seat.getVenue().getId() == selectedVenue.getId() && seat.getStatus()== 1) {
-                System.out.println(seat.getId() + "\t\t$" + seat.getPrice() + "\t" + seat.getStatus());
+            if (seat.getVenue().getVenueID() == selectedVenue.getVenueID() && seat.getStatus()== 1) {
+                System.out.println(seat.getSeatID() + "\t\t$" + seat.getPrice() + "\t" + seat.getStatus());
             }
         }
 
@@ -305,7 +305,7 @@ public class CustomerManager {
         // Find the selected seat
         Seat selectedSeat = null;
         for (Seat seat : seats) {
-            if (seat.getId().equals(String.valueOf(seatNumber))) {
+            if (seat.getSeatID().equals(String.valueOf(seatNumber))) {
                 selectedSeat = seat;
                 break;
             }
@@ -337,7 +337,7 @@ public class CustomerManager {
             System.out.println("Pay At: " + new Date().toString());
 
             // Add the ticket information to the SQL table
-            String sqlText = "INSERT INTO ticket (customer, seat, venue) VALUES (\""+username+"\", \""+selectedSeat.getId()+"\", \""+selectedVenue.getId()+"\")";
+            String sqlText = "INSERT INTO ticket (customer, seat, venue) VALUES (\""+username+"\", \""+selectedSeat.getSeatID()+"\", \""+selectedVenue.getVenueID()+"\")";
             Database.runUpdate(sqlText);
         } else {
             System.out.println("Failed to book the seat. Please try again later.");
@@ -363,7 +363,7 @@ public class CustomerManager {
             for (Ticket ticket : purchasedTickets) {
                 System.out.printf("%-10s %-15s %-10s\n",
                         ticket.getTicketID(),
-                        ticket.getSeat().getId(),
+                        ticket.getSeat().getSeatID(),
                         ticket.getVenue().getLocation());
             }
         }
@@ -395,8 +395,8 @@ public class CustomerManager {
     }
 
     public static void modifyAccount(String username) {
-        Customer customer = null;
-        for (Customer cus : userArray) {
+        User customer = null;
+        for (User cus : userArray) {
             if (cus.getUsername().equals(username)) {
                 customer = cus;
                 break;
@@ -450,7 +450,7 @@ public class CustomerManager {
         } while (true);
     }
 
-    private static void updateCustomer(Customer user) {
+    private static void updateCustomer(User user) {
         String sqlText = "update `User` set " +
                              "`password` = '" + user.getPassword() + "', " +
                              "`name` = '" + user.getName() + "', " +

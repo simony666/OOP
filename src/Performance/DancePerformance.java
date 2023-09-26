@@ -8,7 +8,7 @@ package Performance;
  *
  * @author Zy
  */
-public class DancePerformance extends PerformanceType{
+public class DancePerformance implements PerformanceType{
     private String typeName = "Dance"; // Type name for Dance Performance
     private String description = "A dynamic and energetic dance showcase featuring talented dancers from around the world";
     

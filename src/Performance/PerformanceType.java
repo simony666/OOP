@@ -8,9 +8,9 @@ package Performance;
  *
  * @author Zy
  */
-public abstract class PerformanceType {
+public interface PerformanceType {
     
-  // Abstract method for getting the type name
-    public abstract String getTypeName();  
-    public abstract String getDescription();  
+ 
+     String getTypeName();  
+     String getDescription();  
 }

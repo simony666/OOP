@@ -34,6 +34,11 @@ public class PerformanceManagement{
         performanceTypes.add(new MusicPerformance());
         performanceTypes.add(new PopPerformance());
     }
+    
+    public static void main (String[] args){
+        new Database();
+        displayPerformanceScreen();
+    }
 
     
     // display performance screen

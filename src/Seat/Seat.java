@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import util.ClearScreen;
 
 
 
@@ -99,10 +100,14 @@ public class Seat {
         
         //let user input the seat ID and verify
         do {
+            System.out.println("===================================");
+            System.out.println("=========:    Add Seat     :=======");
+            System.out.println("===================================");
             boolean idExist = false;
             System.out.print("Please enter Seat ID: ");
             InSeat = sc.nextLine().trim();
             if (InSeat.isEmpty()) {
+                ClearScreen.cls();
                 System.out.println("Seat ID cannot be empty. Please try again.");
                 InSeat = null;
             }else 
@@ -114,6 +119,7 @@ public class Seat {
                     }
                 }
             if (idExist) {
+                ClearScreen.cls();
                 System.out.println("Seat ID already exists. Please choose a different Seat ID.");
                 InSeat = null; // Set InVenue to null to indicate an error
             }
@@ -183,9 +189,10 @@ public class Seat {
     
     //View all venue mothod
     public static void viewAllSeat() {
+        ClearScreen.cls();
         if (seatArrayList.isEmpty()) {
             System.out.println("============:   No seat found   :============" + "\n\n");
-            SeatManager.displayVenueScreen();
+            return;
         } else {
             System.out.println("=============:   Seat List   :=============" + "\n");
             System.out.printf("%-15s %-15s %-15s %-15s%n", "seatID", "venueID", "price", "status");
@@ -199,8 +206,12 @@ public class Seat {
     //Modify seat mothod
     public static void modifySeat(){
         Scanner sc = new Scanner(System.in);
-
+        ClearScreen.cls();
         viewAllSeat();
+        
+        System.out.println("=====================================");
+        System.out.println("========:   Modify Seat    :=========");
+        System.out.println("=====================================");
 
         // Prompt the user to enter the Seat ID to modify
         System.out.print("\n" + "Please enter the Seat ID to modify: ");
@@ -217,7 +228,9 @@ public class Seat {
         }
 
         if (index == -1) {
+            ClearScreen.cls();
             System.out.println("Seat with ID '" + modifySc + "' not found.");
+            return;
         } else {
             // Seat found, allow modifications
             System.out.println("Current Venue Details:");
@@ -235,6 +248,7 @@ public class Seat {
                 Seat seat = seatArrayList.get(i);
                 if (seat.getSeatID().equals(newSeatID) && !newSeatID.equals(modifySc)) {
                     System.out.println("Seat with ID '" + newSeatID + "' already exists. Please choose a different Seat ID.");
+                    ClearScreen.cls();
                     return; // Return early if the new Seat ID already exists
                 }
             }
@@ -308,6 +322,9 @@ public class Seat {
         viewAllSeat();
 
         try {
+            System.out.println("================================================");
+            System.out.println("===========:      Delete Seat       :===========");
+            System.out.println("================================================");
             System.out.print("Please enter the Seat ID that you want to delete: ");
             String deleSc = sc.nextLine();
             int index = -1;
@@ -321,6 +338,7 @@ public class Seat {
 
             if (index == -1) {
                 System.out.println("The seat ID is not exits. Please try it again");
+                return;
             } else {
                 seatArrayList.remove(index);
                 System.out.println("Remove seat ID successfully");
@@ -332,6 +350,7 @@ public class Seat {
             
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a value.");
+            return;
         }
     }
         

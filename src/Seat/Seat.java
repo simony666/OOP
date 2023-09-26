@@ -386,7 +386,7 @@ public class Seat {
 //        return false;
     
 
-    //CChange the status for seatID when ticket ........................
+//    CChange the status for seatID when ticket ........................
 //    public static void changeStatus(String targetSeatID){
 //        //change status to 2 when new ticket
 //        for (int i = 0; i < seatArrayList.size(); i++) {

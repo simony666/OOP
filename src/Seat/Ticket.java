@@ -113,43 +113,6 @@ public class Ticket {
 
         Seat seat = new Seat(findSeatID, Venue.existVenue(findVenueID), findPrice, findStatus);
         
-//        do{
-//            System.out.print("Please enter Seat ID: ");
-//            InSeatID = sc.nextLine().trim();
-//            boolean idExist = false;
-//            if (InSeatID.isEmpty()){
-//                System.out.println("Seat ID cannot be empty. Please try Again.");
-//                InSeatID = null;                
-//            }else{
-//                // Check if the Seat ID already exists
-//                for (Ticket ticket : ticketArrayList) {
-//                    if (ticket.getSeatID().equals(InSeatID)) {
-//                        idExist = true;
-//                        break;
-//                    }
-//                }
-//                if (idExist){
-//                    System.out.println("Seat ID already exists in ticket. Please choose a different Seat ID.");
-//                    InSeatID = null;
-//                }else{
-//                    // Check if the seat ID not exits
-//                    Seat foundSeat = Seat.existSeat(InSeatID);
-//                    if (foundSeat == null){
-//                        System.out.println("Seat ID does not found in array. Please try again.");
-//                        InSeatID = null;
-//                    }else{
-//                        boolean checkedStatus = Seat.checkStatus(InSeatID);
-//                        if (checkedStatus == true){
-//                            outPrice = Seat.getSeatPrice(InSeatID, InTicketPrice);
-//                            }else{
-//                                InSeatID = null;
-//                                System.out.println("Status for this seat is unavailable. Please choose anthoer seat");
-//                            }
-//                        }
-//                    }
-//            }
-//        }while (InSeatID == null);
-        
         
         // Create the temporary list for store Venue
         Ticket TList = new Ticket(Seat.existSeat(findSeatID), Venue.existVenue(findVenueID));
@@ -176,24 +139,6 @@ public class Ticket {
         }
     }
 }
-    
-//    public static void viewAllTicket() {
-//        if (ticketArrayList.isEmpty()) {
-//            System.out.println("============:   No ticket found   :============" + "\n\n");
-//            SeatManager.displayTicketScreen();
-//        } else {
-//            for (Ticket ticket : ticketArrayList) {
-//                System.out.println("=============:   Ticket Lsit   :=============" +"\n");
-//                System.out.printf("%-15s %-15s %-15s %-15s", "TicketID", "SeatID", "VenueID", "Ticket Price");
-//                System.out.println("\n"+"_________________________________________________________");
-//                for (int i = 0; i < ticketArrayList.size(); i++) {
-//                    Ticket ticketView = ticketArrayList.get(i);
-//            System.out.printf("%-15s %-15s %-15s %-15s", ticket.getTicketID(), ticket.getSeat().getSeatID(), ticket.getSeat().getVenue().getVenueID(), ticket.getSeat().getPrice());
-//        }      
-//            }
-//        }
-//    }
-    
 
     //Delete ticket Method
     public static void deleteTicket(ArrayList<Ticket> ticketArrayList) {
@@ -226,12 +171,12 @@ public class Ticket {
     }
     
     
-//    public static Ticket existTicket(int targetTicketID){
-//    for (Ticket ticket : ticketArrayList) {
-//        if (ticket.getSeatID().equals(targetTicketID)) {
-//            return ticket; // Return the Seat object when a matching SeatID is found.
-//        }
-//    }
-//    return null; // Return null if no matching SeatID is found.
-//    }
+    public static Ticket existTicket(int targetTicketID){
+    for (Ticket ticket : ticketArrayList) {
+        if (ticket.getSeat().getSeatID().equals(targetTicketID)) {
+            return ticket; // Return the Seat object when a matching SeatID is found.
+        }
+    }
+    return null; // Return null if no matching SeatID is found.
+    }
 }

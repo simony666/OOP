@@ -56,33 +56,13 @@ public class Invoice {
     }
     
     
-    public static void makePayment(){
-        Scanner sc = new Scanner(System.in);
-        int InTicketID;
-        double InTicketPrice = 0;
-        double outPrice = 0;
-        Seat selectedTicket = null;
+    public static Invoice makePayment(Ticket ticket){
         
-        Ticket.viewAllTicket();
-        System.out.print("Please enter Ticket Id that you want to make payment: ");
-        int InTicket = sc.nextInt();
-        sc.nextLine();
-        Ticket foundTicket = Ticket.existTicket(InTicket);
-        if (foundTicket == null){
-            System.out.println("Ticket Id not exist. Please try again");
-        }else{
-            System.out.print("Enter your password: ");
-            //if (varify)
-            //Here, you can implement the logic to collect payment.
-            // For simplicity, let's assume the payment is successful and mark the ticket as paid.
+        System.out.println("[System]Assumming interact with bank and bank return succesfull payment.");
             
-            
-            System.out.println("Thank for your purchase");
-            //change the related seatID's status to 2
-            foundTicket.getSeat().setStatus(2);
-            Invoice invoice = generateInvoice(foundTicket);
-            
-        }
+        System.out.println("Thank for your purchase");
+        ticket.getSeat().setStatus(2);
+        return generateInvoice(ticket);
         
     }
     

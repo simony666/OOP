@@ -180,7 +180,7 @@ public class Ticket {
             } else {
                 ticketArrayList.remove(index);
                 System.out.println("Remove ticket ID successfully");
-                boolean deleteTicketInDB = deleteTicketFromDatabase(deleSc);
+                boolean deleteTicketInDB = deleteTicketFromDatabase(String.valueOf(deleSc));
                 if (deleteTicketInDB = true){
                     System.out.println("Delete ticket in database successful.");
                 }

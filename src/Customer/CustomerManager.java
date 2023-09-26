@@ -4,9 +4,11 @@
  */
 package Customer;
 
+import Payment.Invoice;
 import Seat.Seat;
 import Seat.Ticket;
 import Seat.Venue;
+import Staff.StaffManager;
 import java.util.ArrayList;
 import java.util.Scanner;
 import util.ClearScreen;
@@ -15,6 +17,8 @@ import util.Role;
 import util.Validator;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+import util.User;
 
 /**
  *
@@ -23,6 +27,7 @@ import java.sql.SQLException;
 public class CustomerManager {
     
     private static ArrayList<Customer> cusArray = getCustomerList();
+    private static ArrayList<User> userArray = StaffManager.getUserList();
     
     public CustomerManager(){
     }
@@ -97,7 +102,7 @@ public class CustomerManager {
 
             Customer user = Customer.login(username, password);
             if (user != null){
-                main.mainScreen.setUsername(user.getName());
+                main.mainScreen.setUsername(user.getUsername());
                 return true;
             }else{
                 System.out.println("Wrong Username/Password");
@@ -157,7 +162,7 @@ public class CustomerManager {
 
             boolean signup = Customer.signup(username, password, name, email);
             if (signup){
-                Login();
+                return Login();
             }
             System.out.println("Wrong Username/Password");
             System.out.println("Sign Up again? (Y)es/(N)o ");
@@ -312,10 +317,24 @@ public class CustomerManager {
         }
 
         // Book the selected seat
-        boolean bookingResult = Ticket.addTicket(selectedSeat, selectedVenue);
-
-        if (bookingResult) {
+        Ticket ticket = Ticket.addTicket(selectedSeat, selectedVenue);
+        
+        Invoice inv = Invoice.makePayment(ticket);
+        
+        
+        if (inv != null) {
             System.out.println("Seat booked successfully!");
+            
+            System.out.println("=============:   Invoice   :=============" + "\n");
+            System.out.printf("%-15s %-15s %-15s %-15s %-15s%n", "InvoiceID", "TicketID", "SeatID", "VenueID", "price");
+            System.out.println("\n_________________________________________________________");
+            System.out.printf("%-10s %-15s %-15s %-15s%n",
+                    inv.getInvoiceID(),
+                    inv.getTicket().getTicketID(),
+                    inv.getSeat().getSeatID(),
+                    inv.getTicket().getSeat().getVenue().getVenueID(),
+                    inv.getSeat().getPrice());
+            System.out.println("Pay At: " + new Date().toString());
 
             // Add the ticket information to the SQL table
             String sqlText = "INSERT INTO ticket (customer, seat, venue) VALUES (\""+username+"\", \""+selectedSeat.getId()+"\", \""+selectedVenue.getId()+"\")";
@@ -331,13 +350,11 @@ public class CustomerManager {
         System.out.println("==== View Purchased Tickets ========");
         System.out.println("=====================================");
 
-        // Retrieve purchased tickets from the database
         ArrayList<Ticket> purchasedTickets = getPurchasedTickets(username);
 
         if (purchasedTickets.isEmpty()) {
             System.out.println("No purchased tickets found for the username: " + username);
         } else {
-            // Display purchased tickets in table form
             System.out.println("Purchased Tickets:");
             System.out.println("=======================================================");
             System.out.printf("%-10s %-15s %-10s\n", "Ticket ID", "Seat", "Venue");
@@ -351,7 +368,6 @@ public class CustomerManager {
             }
         }
 
-        // Add an option for the user to return to the main menu
         System.out.println("Press Enter to return to the main menu...");
         sc.nextLine();
     }
@@ -359,16 +375,13 @@ public class CustomerManager {
     private static ArrayList<Ticket> getPurchasedTickets(String username) {
         ArrayList<Ticket> purchasedTickets = new ArrayList<>();
 
-        // Replace this SQL query with your actual database query to retrieve purchased tickets
         String sqlText = "SELECT * FROM ticket WHERE customer = '" + username + "'";
         ResultSet result = Database.runQuery(sqlText);
 
         try {
             while (result.next()) {
-                // Parse data from the database and create Ticket objects
                 String seat = result.getString("seat");
                 String venue = result.getString("venue");
-                // Retrieve seat and venue information as needed
 
                 // Create Ticket object and add it to the list
                 Ticket ticket = new Ticket(Seat.existSeat(seat), Venue.existVenue(venue));
@@ -383,7 +396,7 @@ public class CustomerManager {
 
     public static void modifyAccount(String username) {
         Customer customer = null;
-        for (Customer cus : cusArray) {
+        for (Customer cus : userArray) {
             if (cus.getUsername().equals(username)) {
                 customer = cus;
                 break;
@@ -437,7 +450,6 @@ public class CustomerManager {
         } while (true);
     }
 
-    // You need to implement this method to update customer information in the database
     private static void updateCustomer(Customer user) {
         String sqlText = "update `User` set " +
                              "`password` = '" + user.getPassword() + "', " +

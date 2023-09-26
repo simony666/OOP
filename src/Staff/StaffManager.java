@@ -16,13 +16,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 /**
  *
  * @author yongc
  */
 public class StaffManager {
     
-    private static ArrayList<User> userArray = getUserList();
+    public static ArrayList<User> userArray = getUserList();
     
     public StaffManager(){
     }
@@ -495,7 +497,7 @@ public class StaffManager {
         } while (true);
     }
     
-    private static ArrayList<User> getUserList(){
+    public static ArrayList<User> getUserList(){
         ArrayList<User> tempList = new ArrayList<>();
         
         String sqlText = "select * from `User`";

@@ -1,22 +1,22 @@
 package Artist;
 
 import java.util.ArrayList;
-import util.Database;
+import util.Person;
 
+import util.Database;
 /**
  *
  * @author Zy
  */
-public class Artist extends util.Person {
+public class Artist extends Person {
     
     // non-static field
     private int id;
-//    private String name;
-//    private int age;
-//    private Role role;
+    private String bandName;
     
     // static field
-    private static int nextId = 1;
+    // private static int nextId = 1;
+    
     
     // Shared ArrayList for storing artists
     private static ArrayList<Artist> artistArrayList = new ArrayList<Artist>();
@@ -24,41 +24,41 @@ public class Artist extends util.Person {
     // no arg constructor
     public Artist(){
         //getFromDatabase();
+        
     };
     
-    // Constructor with 4 parameters
-    public Artist(String name, int age){
-        super(name,age);
-        this.id = nextId;
-//        this.name = name;
+    public Artist(String name, String bandName){
+        super(name);
+        this.bandName = bandName;
+    }
+    
+    // Constructor with 2 parameters
+    public Artist(int id, String name, String bandName){
+        super(name);
+        this.id = id;
+        // this.id = nextId;
+        this.bandName = bandName;
 //        this.age = age;
 //        this.role = role;
         // Increment nextId for the next artist
-        nextId++;
+        //nextId++;
     };  
+
+    public String getBandName() {
+        return bandName;
+    }
+
     
-    // getter / Accessors for id, name, age, and role
+    // getter 
     public int getId(){
         return id;
     }
     
+  
     
-//    public String getName(){
-//        return name;
+//    public static int getNextId(){
+//        return nextId;
 //    }
-//    
-//    public int getAge(){
-//        
-//        return age;
-//    }
-//    
-//    public Role getRole(){
-//        return role;
-//    }
-    
-    public static int getNextId(){
-        return nextId;
-    }
     
     public static ArrayList<Artist> getArtistArrayList() {
         return artistArrayList;
@@ -66,20 +66,17 @@ public class Artist extends util.Person {
     
     
     // setter / Mutuator for id, name, age, and role
-    public void setId(int id){
-        this.id = id;
-    }
-    
-//    public void setName(String name){
-//        this.name = name;
+//    public void setId(int id){
+//        this.id = id;
 //    }
-//    
-//    public void setAge(int age){
-//         this.age = age;
-//    }
-   
+
+    public void setBandName(String bandName) {
+            this.bandName = bandName;
+        }
+
     public static void setArtistArrayList(ArrayList<Artist> artistList) {
         artistArrayList = artistList; // Assuming artistArrayList is a class variable
     }
+    
 
 }

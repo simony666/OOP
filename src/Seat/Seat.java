@@ -16,7 +16,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author User
+ * @author QL
  */
 public class Seat {
     

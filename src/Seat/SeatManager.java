@@ -6,12 +6,13 @@ import Seat.Ticket;
 import java.util.ArrayList;
 import java.util.Scanner;
 import util.ClearScreen;
+import util.Database;
 import util.Validator;
 
 
 /**
  *
- * @author User
+ * @author QL
  */
 
 public class SeatManager {
@@ -37,8 +38,8 @@ public class SeatManager {
             System.out.println("\n" + "=======================================");
             System.out.println("========   Seat Management  ===========");
             System.out.println("=======================================");
-            System.out.println("======= 1) Manage Seat         ========");
-            System.out.println("======= 2) Manage Vanue        ========");
+            System.out.println("======= 1) Manage Venue         ========");
+            System.out.println("======= 2) Manage Seat        ========");
             System.out.println("======= 3) Manage Ticket      =========");
             System.out.println("======= 4) Back to Admin Page =========");
             System.out.println("======= 5) Exit               =========");
@@ -54,12 +55,13 @@ public class SeatManager {
                 try {
                     int selection = Integer.parseInt(input);
 
+
                     switch (selection) {
                         case 1:
-                            displaySeatScreen();
+                            displayVenueScreen();
                             break;
                         case 2:
-                            displayVenueScreen(); 
+                            displaySeatScreen(); 
                             break;
                         case 3:
                             displayTicketScreen();

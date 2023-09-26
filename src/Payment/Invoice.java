@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author User
+ * @author Ql
  */
 public class Invoice {
     private int invoiceID;

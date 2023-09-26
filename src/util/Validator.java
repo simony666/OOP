@@ -16,4 +16,12 @@ public class Validator {
     public static boolean isInputEmpty(String text) {
         return text.trim().isEmpty();
     }
+    
+    public static boolean containsOnlyAlphabetic(String input) {
+        // Use a regex pattern to check if the input consists entirely of letters (alphabetic characters)
+        Pattern pattern = Pattern.compile("^[a-zA-Z]+$");
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
+    }
+
 }

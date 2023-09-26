@@ -3,7 +3,6 @@ package Seat;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import util.Validator;
 /**
  *
  * @author QL

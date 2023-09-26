@@ -371,5 +371,4 @@ public class ArtistManagement {
         Database.runUpdate(sql);
     }
 
-
 }

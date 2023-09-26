@@ -3,9 +3,11 @@ package main;
 import Artist.ArtistManagement;
 import Performance.PerformanceManagement;
 import Schedule.ScheduleManagement;
+import Staff.StaffManager;
 import util.Validator;
 import java.util.Scanner;
 import util.ClearScreen;
+import util.Database;
 
 /**
  *
@@ -17,8 +19,10 @@ public class mainScreen {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       ClearScreen.cls();
-       displayMainScreen();
+        Database database = new Database();
+        ClearScreen.cls();
+        PerformanceManagement.displayPerformanceScreen();
+        //displayMainScreen();
         
     }
     
@@ -80,6 +84,9 @@ public class mainScreen {
 }
     
 public static void displayAdmin(){
+    if(!StaffManager.staffEnter()){
+        return;
+    }
         
     do{
          // Main login screen

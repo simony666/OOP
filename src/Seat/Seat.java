@@ -417,7 +417,45 @@ public class Seat {
     }
     
     
-    //////////////////////////////////////////////////////////////modifySeat
+    //modify vseat in database
+    public static boolean modifySeatInDatabase(Seat modifiedSeat) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to insert a new seat
+            String query = "INSERT INTO Seat (seatID, venue, price, status) VALUES (?, ?, ?, ?)";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameters for the prepared statement
+            preparedStatement.setString(1, modifiedSeat.getSeatID());
+            preparedStatement.setString(2, modifiedSeat.getVenue().getVenueID());
+            preparedStatement.setDouble(3, modifiedSeat.getPrice());
+            preparedStatement.setInt(4, modifiedSeat.getStatus());
+
+            // Execute the INSERT query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the insertion was successful
+            if (rowsAffected > 0) {
+                return true; 
+            } else {
+                connection.rollback(); 
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); 
+        } finally {
+
+        }
+
+        return false; // Insertion failed
+    }
+    
     
     public static boolean deleteSeatFromDatabase(String seatIDToDelete) {
         Connection connection = null;

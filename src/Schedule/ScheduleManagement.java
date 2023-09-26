@@ -18,12 +18,13 @@ import java.util.Comparator;
 
 
 import util.ClearScreen;
+import util.Database;
 import util.Validator;
 
 public class ScheduleManagement {
-    static ArrayList<Schedule> scheduleList = Schedule.getScheduleArrayList();
-    static ArrayList<Performance> pfmArrayList = Performance.getPfmArrayList();
-    static ArrayList<Artist> artistArrayList = Artist.getArtistArrayList(); 
+    static ArrayList<Schedule> scheduleList = Database.scheduleList;
+    static ArrayList<Performance> pfmArrayList = Database.pfmList; 
+    static ArrayList<Artist> artistArrayList = Database.artistList;
     private static int nextId = 1; // Initialize nextId
 
     // Display Schedule Screen
@@ -107,7 +108,7 @@ public class ScheduleManagement {
     }
 
     // Add schedule
-    public static void addSchedule(ArrayList<Artist> artistArrayList, ArrayList<Schedule> scheduleArrayList, ArrayList<Performance> pfmArrayList) throws ParseException {
+    public static void addSchedule(ArrayList<Artist> scheduleList, ArrayList<Schedule> scheduleArrayList, ArrayList<Performance> pfmArrayList) throws ParseException {
             Scanner sc = new Scanner(System.in);
             String dateStr;
             SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
@@ -258,25 +259,22 @@ public class ScheduleManagement {
                     try {
                          date = sdfDate.parse(dateStr); // Initialize date inside the try block
 
+                         // Parse pId as an integer
+                        int pIdInt = Integer.parseInt(pId);
+                         
                         // Create a Schedule object
-                        Schedule schedule = new Schedule(date, startTime, endTime, hours, minutes, pName);
+                        Schedule schedule = new Schedule(date, startTime, endTime, hours, minutes, pName,pIdInt);
 
                         // Increment the nextId for the next schedule
-                        nextId++;
+                        //nextId++;
                         // Add the Schedule object to the ArrayList
-                        scheduleArrayList.add(schedule);
+                        //scheduleArrayList.add(schedule);
+                        Database.insertSchedule(schedule.getDate(), schedule.getStartTime(), schedule.getEndTime(), schedule.getDurationHours(),
+                       schedule.getDurationMinutes(), schedule.getPerformance(), schedule.getpId());
+
 
                         // Print a message to confirm that the schedule is added
-                        System.out.println("Schedule added successfully!");
-
-                        // Ask the user if they want to add another schedule
-//                        System.out.print("Do you want to add another schedule? (y/n): ");
-//                        String addAnother = sc.nextLine().toLowerCase();
-//
-//                        if (!addAnother.equals("y")) {
-//                            ClearScreen.cls();
-//                            break; // Exit the loop if the user doesn't want to add another schedule
-//                        }
+//                        System.out.println("Schedule added successfully!");
                         break;
                     } catch (ParseException e) {
                         System.out.println("Invalid date format. Please try again.");
@@ -296,7 +294,7 @@ public class ScheduleManagement {
 
     // view schedule
     public static void viewSchedule(ArrayList<Schedule> scheduleArrayList, ArrayList<Performance> pfmArrayList) {
-        ArrayList<Schedule> scheduleList = Schedule.getScheduleArrayList();
+        //ArrayList<Schedule> scheduleList = Schedule.getScheduleArrayList();
 
         // check if there are any schedules in the list
         if (scheduleList.isEmpty()) {
@@ -336,197 +334,210 @@ public class ScheduleManagement {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             String formattedDate = dateFormat.format(s.getDate());
 
-            System.out.printf("%-10s %15s %15s %15s %15s %20s %15s", s.getId(), formattedDate, s.getStartTime(),
+            System.out.printf("%-10s %15s %15s %13s %18s %10s %15s", s.getId(), formattedDate, s.getStartTime(),
                     s.getEndTime(), duration, p.getName(),"\n");
         }
     }
         
-    // Update schedule
-    public static void updateSchedule(ArrayList<Schedule> scheduleArrayList, ArrayList<Performance> pfmArrayList) {
-        Scanner sc = new Scanner(System.in);
-        String dateStr;
-        SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
-        boolean isValidDate = false;
-        Date currentDate = new Date(); // Get the current date
+// Update schedule
+public static void updateSchedule(ArrayList<Schedule> scheduleArrayList, ArrayList<Performance> pfmArrayList) {
+    Scanner sc = new Scanner(System.in);
+    SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
+    Date currentDate = new Date(); // Get the current date
 
-        // Check if there are any schedules in the list
-        if (scheduleArrayList.isEmpty()) {
-            System.out.println("No schedules added. Please add a schedule to update.");
+    // Check if there are any schedules in the list
+    if (scheduleArrayList.isEmpty()) {
+        System.out.println("No schedules added. Please add a schedule to update.");
+        return;
+    }
+
+    // Display available schedules
+    ScheduleManagement.viewSchedule(scheduleArrayList, pfmArrayList);
+
+    try {
+        System.out.println("");
+        System.out.print("Please enter the schedule ID that you want to update: ");
+        int sId = Integer.parseInt(sc.nextLine());
+
+        // Find the schedule by ID
+        Schedule scheduleToUpdate = null;
+        for (Schedule s : scheduleArrayList) {
+            if (s.getId() == sId) {
+                scheduleToUpdate = s;
+                break;
+            }
+        }
+
+        if (scheduleToUpdate == null) {
+            System.out.println("The schedule with ID " + sId + " does not exist.");
             return;
         }
 
-        // Display available schedules
-        ScheduleManagement.viewSchedule(scheduleArrayList, pfmArrayList);
+        System.out.println("\n===============================================");
+        System.out.println("============   Updating Schedule  =============");
+        System.out.println("===============================================\n");
 
-        try {
-            System.out.println("");
-            System.out.print("Please enter the schedule ID that you want to update: ");
-            int sId = Integer.parseInt(sc.nextLine());
+        // Prompt the user to enter a new date
+        boolean isValidDate = false;
+        String dateStr;
 
-            // Find the schedule by ID
-            Schedule scheduleToUpdate = null;
-            for (Schedule s : scheduleArrayList) {
-                if (s.getId() == sId) {
-                    scheduleToUpdate = s;
-                    break;
-                }
+        do {
+            System.out.print("Enter a new date for the schedule (dd/mm/yyyy): ");
+            dateStr = sc.nextLine();
+
+            if (dateStr.trim().isEmpty() || dateStr.length() != 10) {
+                System.out.println("Invalid date format. Please try again.");
+                continue;
             }
 
-            if (scheduleToUpdate == null) {
-                System.out.println("The schedule with ID " + sId + " does not exist.");
-                return;
+            try {
+                Date enteredDate = sdfDate.parse(dateStr);
+
+                // Check if the entered date is after the current date
+                if (enteredDate.after(currentDate)) {
+                    isValidDate = true;
+                    scheduleToUpdate.setDate(enteredDate); // Update the schedule's date
+                } else {
+                    System.out.println("Invalid date. Date must be after the current date. Please try again.");
+                }
+            } catch (ParseException e) {
+                System.out.println("Invalid date format. Please try again.");
+            }
+        } while (!isValidDate);
+
+        // Prompt the user to enter a new starting time
+        boolean isValidTime = false;
+        Date d1 = null;
+        Date d2 = null;
+        int hours = 0;
+        int minutes = 0;
+        String startTime;
+
+        do {
+            System.out.print("Enter a new starting time (HH:mm): ");
+            startTime = sc.nextLine();
+
+            if (Validator.isInputEmpty(startTime)) {
+                System.out.println("Starting time is required. Please try again.");
+                continue;
             }
 
-            System.out.println("\n===============================================");
-            System.out.println("============   Updating Schedule  =============");
-            System.out.println("===============================================\n");
+            try {
+                SimpleDateFormat sdfTime24 = new SimpleDateFormat("HH:mm");
+                d1 = sdfTime24.parse(startTime);
+                isValidTime = true; // Set the flag to true if parsing succeeds
+            } catch (ParseException e) {
+                System.out.println("Invalid time format. Please try again.");
+                continue; // Prompt again if parsing fails
+            }
 
-            // Prompt the user to enter a new date
+            // Prompt the user to enter a new ending time
+            String endTime;
             do {
-                System.out.print("Enter a new date for the schedule (dd/mm/yyyy): ");
-                dateStr = sc.nextLine();
+                System.out.print("Enter a new ending time (HH:mm): ");
+                endTime = sc.nextLine();
 
-                if (dateStr.trim().isEmpty() || dateStr.length() != 10) {
-                    System.out.println("Invalid date format. Please try again.");
-                    continue;
-                }
-
-                try {
-                    Date enteredDate = sdfDate.parse(dateStr);
-
-                    // Check if the entered date is after the current date
-                    if (enteredDate.after(currentDate)) {
-                        isValidDate = true;
-                        scheduleToUpdate.setDate(enteredDate); // Update the schedule's date
-                    } else {
-                        System.out.println("Invalid date. Date must be after the current date. Please try again.");
-                    }
-                } catch (ParseException e) {
-                    System.out.println("Invalid date format. Please try again.");
-                }
-            } while (!isValidDate);
-
-
-            // Prompt the user to enter a new starting time
-
-    //            SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa");
-                Date d1 = null;
-                Date d2 = null;
-                boolean isValidTime = false;
-
-                int hours = 0;
-                int minutes = 0;
-            String startTime;
-            do {
-                System.out.print("Enter a new starting time (HH:mm): ");
-                startTime = sc.nextLine();
-
-                if (Validator.isInputEmpty(startTime)) {
-                    System.out.println("Starting time is required. Please try again.");
+                if (Validator.isInputEmpty(endTime)) {
+                    System.out.println("Ending time is required. Please try again.");
                     continue;
                 }
 
                 try {
                     SimpleDateFormat sdfTime24 = new SimpleDateFormat("HH:mm");
-                    d1 = sdfTime24.parse(startTime);
+                    d2 = sdfTime24.parse(endTime);
                     isValidTime = true; // Set the flag to true if parsing succeeds
                 } catch (ParseException e) {
                     System.out.println("Invalid time format. Please try again.");
                     continue; // Prompt again if parsing fails
                 }
 
-                // Prompt the user to enter a new ending time
-                String endTime;
-                do {
-                    System.out.print("Enter a new ending time (HH:mm): ");
-                    endTime = sc.nextLine();
+                // Calculate the time difference in hours and minutes
+                long diffMs = d2.getTime() - d1.getTime();
 
-                    if (Validator.isInputEmpty(endTime)) {
-                        System.out.println("Ending time is required. Please try again.");
-                        continue;
-                    }
-
-                    try {
-                        SimpleDateFormat sdfTime24 = new SimpleDateFormat("HH:mm");
-                        d2 = sdfTime24.parse(endTime);
-                        isValidTime = true; // Set the flag to true if parsing succeeds
-                    } catch (ParseException e) {
-                        System.out.println("Invalid time format. Please try again.");
-                        continue; // Prompt again if parsing fails
-                    }
-
-                    // Calculate the time difference in hours and minutes
-                    long diffMs = d2.getTime() - d1.getTime();
-
-                    // Handle the case where the end time is on the next day
-                    if (diffMs < 0) {
-                        diffMs += 24 * 60 * 60 * 1000; // Add 24 hours in milliseconds
-                    }
-
-                    long diffSec = diffMs / 1000;
-                    hours = (int) (diffSec / 3600); // Total duration in hours
-                    int remainingSeconds = (int) (diffSec % 3600);
-                    minutes = remainingSeconds / 60; // Remaining seconds converted to minutes
-
-                    // Adjust for the case where the end time is before the start time
-                    if (hours < 0 || (hours == 0 && minutes < 0)) {
-                        hours += 24;
-                    }
-
-                    // Check if the duration is at least 2 hours
-                    if (hours >= 2 && minutes >= 0) {
-                        scheduleToUpdate.setStartTime(startTime);
-                        scheduleToUpdate.setEndTime(endTime);
-                        scheduleToUpdate.setDurationHours(hours);
-                        scheduleToUpdate.setDurationMinutes(minutes);
-                        break; // Exit the loop when the schedule is updated
-
-                    } else {
-                        System.out.println("Invalid performance duration. The duration must be at least 2 hours. Please try again.");
-                    }
-                } while (true);
-                break;
-            } while (true);
-
-
-            System.out.println("");
-            do{
-                // Display the list of available performances
-                System.out.println("Available Performances:");
-                for (Performance performance : pfmArrayList) {
-                    System.out.println(performance.getId() + ": " + performance.getName());
+                // Handle the case where the end time is on the next day
+                if (diffMs < 0) {
+                    diffMs += 24 * 60 * 60 * 1000; // Add 24 hours in milliseconds
                 }
 
-                // Prompt the user to choose a new performance name
-                System.out.print("Enter the ID of the new performance name: ");
-                String newPId = sc.nextLine();
+                long diffSec = diffMs / 1000;
+                hours = (int) (diffSec / 3600); // Total duration in hours
+                int remainingSeconds = (int) (diffSec % 3600);
+                minutes = remainingSeconds / 60; // Remaining seconds converted to minutes
 
-                // Check if the selected performance ID is valid
-                boolean performanceIdValid = false;
-                for (Performance performance : pfmArrayList) {
-                    if (String.valueOf(performance.getId()).equals(newPId)) {
-                        performanceIdValid = true;
-                        scheduleToUpdate.setPerformance(performance);
-                        break;
-                    }
+                // Adjust for the case where the end time is before the start time
+                if (hours < 0 || (hours == 0 && minutes < 0)) {
+                    hours += 24;
                 }
 
-                if (performanceIdValid) {
-                    break;
+                // Check if the duration is at least 2 hours
+                if (hours >= 2 && minutes >= 0) {
+                    scheduleToUpdate.setStartTime(startTime);
+                    scheduleToUpdate.setEndTime(endTime);
+                    scheduleToUpdate.setDurationHours(hours);
+                    scheduleToUpdate.setDurationMinutes(minutes);
+                    break; // Exit the loop when the schedule is updated
                 } else {
-                    System.out.println("Invalid performance ID. Please try again.");
-                }              
-            }while (true);
+                    System.out.println("Invalid performance duration. The duration must be at least 2 hours. Please try again.");
+                }
+            } while (true);
+        } while (false); // This should be false to exit the loop
 
-            System.out.println("Schedule updated successfully!");
-
-
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid schedule ID.");
+        // Display the list of available performances
+        System.out.println("Available Performances:");
+        for (Performance performance : pfmArrayList) {
+            System.out.println(performance.getId() + ": " + performance.getName());
         }
-    }
 
-     
+        // Prompt the user to choose a new performance ID
+        String newPId;
+        String performanceName = null; // Initialize performanceName
+
+        do {
+            System.out.print("Enter the ID of the new performance: ");
+            newPId = sc.nextLine();
+
+            // Check if the selected performance ID is valid
+            boolean performanceIdValid = false;
+
+            for (Performance performance : pfmArrayList) {
+                if (String.valueOf(performance.getId()).equals(newPId)) {
+                    performanceIdValid = true;
+                    break;
+                }
+            }
+
+            if (performanceIdValid) {
+                // Parse pId as an integer
+                int pIdInt = Integer.parseInt(newPId);
+                // Fetch the performanceName from the database based on the newPId
+                performanceName = Database.getPerformanceName(pIdInt); // Implement this method in your Database class
+                scheduleToUpdate.setPerformanceName(performanceName);
+
+                // Update the performance name in the database
+                //Database.updatePerformanceName(scheduleToUpdate.getpId(), performanceName); // Implement this method in your Database class
+
+                break; // Exit the loop when a valid performance ID is entered
+            } else {
+                System.out.println("Invalid performance ID. Please try again.");
+            }
+        } while (true);
+
+
+        // Update the schedule in the database
+        Database.updateSchedule(sId, scheduleToUpdate.getDate(),
+                scheduleToUpdate.getStartTime(), scheduleToUpdate.getEndTime(),
+                scheduleToUpdate.getDurationHours(), scheduleToUpdate.getDurationMinutes(),
+                scheduleToUpdate.getPerformance(), scheduleToUpdate.getpId());
+
+        System.out.println("Schedule updated successfully!");
+
+    } catch (NumberFormatException e) {
+        System.out.println("Invalid input. Please enter a valid schedule ID.");
+    }
+}
+
+
+
         
     // delete Schedule
     public static void deleteSchedule(ArrayList<Schedule> scheduleArrayList) {
@@ -558,6 +569,7 @@ public class ScheduleManagement {
                     System.out.println("The schedule ID is not available. Please try it again");
                 } else {
                     scheduleArrayList.remove(index);
+                    Database.deleteSchedule(sId);
                     System.out.println("Remove schedule's ID successfully");
                 }
             }

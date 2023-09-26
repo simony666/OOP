@@ -12,9 +12,9 @@ public abstract class Person {
         this.role = Role.Customer;
     }
     
-    public Person(String name, int age){
+    public Person(String name){
         this.name = name;
-        this.age = age;
+        
     }
             
     
@@ -41,7 +41,5 @@ public abstract class Person {
     public void setRole(Role role) {
         this.role = role;
     }
-    
-    
     
 }

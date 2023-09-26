@@ -373,6 +373,17 @@ public class ArtistManagement {
         String sql = "DELETE FROM `Artist` WHERE `Id` = " + Id + ";";
         Database.runUpdate(sql);
     }
+    
+    public static String getArtistName(int artistId) {
+        // Implement logic to fetch the artist name based on artistId from your artistList
+        // Return the artist name or an appropriate default value if not found
+        for (Artist a : getArtist()) {
+            if (a.getId() == artistId) {
+                return a.getName();
+            }
+        }
+        return ""; // Artist with the given ID not found, return an appropriate default value
+    }
 
 
 }

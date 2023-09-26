@@ -3,6 +3,13 @@ package Seat;
 import java.util.ArrayList;
 import java.util.Scanner;
 import Seat.Seat;
+import java.util.List;
+import util.Database;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -122,6 +129,10 @@ public class Ticket {
         
         // Create the temporary list for store Venue
         Ticket TList = new Ticket(Seat.existSeat(findSeatID), Venue.existVenue(findVenueID));
+        boolean addNewTicketToDB = insertTicketIntoDatabase(TList);
+        if (addNewTicketToDB = true){
+            System.out.println("New ticket successful add in to database.");
+        }
 
         // Add the artist to the ArrayList
         Ticket.ticketArrayList.add(TList);
@@ -169,6 +180,10 @@ public class Ticket {
             } else {
                 ticketArrayList.remove(index);
                 System.out.println("Remove ticket ID successfully");
+                boolean deleteTicketInDB = deleteTicketFromDatabase(deleSc);
+                if (deleteTicketInDB = true){
+                    System.out.println("Delete ticket in database successful.");
+                }
             }
             
         } catch (NumberFormatException e) {
@@ -184,5 +199,116 @@ public class Ticket {
         }
     }
     return null; // Return null if no matching SeatID is found.
+    }
+    
+    // Method to retrieve seat data from the database
+    public static List<Ticket> getAllTicketFromDatabase() {
+        List<Ticket> ticket = new ArrayList<>();
+        ticketArrayList.clear();
+        ResultSet resultSet = null;
+
+        try {
+
+            String query = "SELECT * FROM Ticket";
+            resultSet = Database.runQuery(query);
+            // Iterate through the result set and create Ticket objects
+            while (resultSet.next()) {
+                int ticketID = resultSet.getInt("ticketID");
+                String seatID = resultSet.getString("seatID");
+                String venueID = resultSet.getString("venue");
+                
+
+                // Create a ticket object and add it to the list
+                Ticket ticket = new Seat(ticketID, Seat.existSeat(seatID), Venue.existVenue(venueID));
+                Ticket.ticetArrayList.add(ticket);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ticket;
+    }
+    
+    
+    public static boolean insertTicketIntoDatabase(Ticket newTicket) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to insert a new ticjet
+            String query = "INSERT INTO Ticket (seat, venue) VALUES (?, ?)";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameters for the prepared statement
+            preparedStatement.setString(1, newTicket.getSeat().getSeatID());
+            preparedStatement.setString(2, newTicket.getSeat().getVenue().getVenueID());
+
+            // Execute the INSERT query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the insertion was successful
+            if (rowsAffected > 0) {
+                return true; // Insertion successful
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // Insertion failed
+    }
+    
+    
+    public static boolean deleteTicketFromDatabase(String ticketIDToDelete) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to delete the seat by SeatID
+            String query = "DELETE FROM Ticket WHERE ticketID = ?";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameter for the prepared statement (ticketID)
+            preparedStatement.setString(1, ticketIDToDelete);
+
+            // Execute the DELETE query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the deletion was successful
+            if (rowsAffected > 0) {
+                return true; // Deletion successful
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // Deletion failed
     }
 }

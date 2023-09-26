@@ -3,14 +3,14 @@ package Seat;
 import Seat.Venue;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import util.Database;
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 
@@ -168,6 +168,11 @@ public class Seat {
 
         // Create the temporary list for store Venue
         Seat SList = new Seat(InSeat, venue, InPrice, InStatus);
+        boolean addNewSeatToDB = insertSeatIntoDatabase(SList);
+        if (addNewSeatToDB = true){
+            System.out.println("New seat successful add in to database.");
+        }
+        
 
         // Add the artist to the ArrayList
         Seat.seatArrayList.add(SList);
@@ -175,9 +180,6 @@ public class Seat {
 
         return SList; // Return the venue
     }
-
-        
-        
     
     //View all venue mothod
     public static void viewAllSeat() {
@@ -322,6 +324,10 @@ public class Seat {
             } else {
                 seatArrayList.remove(index);
                 System.out.println("Remove seat ID successfully");
+                boolean deleteSeatInDB = deleteSeatFromDatabase(deleSc);
+                if (deleteSeatInDB = true){
+                    System.out.println("Delete seat in database successful.");
+                }
             }
             
         } catch (NumberFormatException e) {
@@ -338,65 +344,120 @@ public class Seat {
         }
         return null; // Return null if no matching SeatID is found.
     }
+    
+    // Method to retrieve seat data from the database
+    public static List<Seat> getAllSeatFromDatabase() {
+        List<Seat> seat = new ArrayList<>();
+        seatArrayList.clear();
+        ResultSet resultSet = null;
 
-    public String getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+
+            String query = "SELECT * FROM Seat";
+            resultSet = Database.runQuery(query);
+            // Iterate through the result set and create Seat objects
+            while (resultSet.next()) {
+                String seatID = resultSet.getString("seatID");
+                String venueID = resultSet.getString("venue");
+                double price = resultSet.getDouble("price");
+                int status = resultSet.getInt("status");
+
+                // Create a seat object and add it to the list
+                Seat newSeat = new Seat(seatID, Venue.existVenue(venueID), price, status);
+                Seat.seatArrayList.add(newSeat);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return seat;
     }
+    
+    
+    public static boolean insertSeatIntoDatabase(Seat newSeat) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to insert a new venue
+            String query = "INSERT INTO Seat (seatID, venue, price) VALUES (?, ?, ?)";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameters for the prepared statement
+            preparedStatement.setString(1, newSeat.getSeatID());
+            preparedStatement.setString(2, newSeat.getVenue().getVenueID());
+            preparedStatement.setDouble(3, newSeat.getPrice());
+
+            // Execute the INSERT query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the insertion was successful
+            if (rowsAffected > 0) {
+                return true; // Insertion successful
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // Insertion failed
+    }
+    
+    
+    //////////////////////////////////////////////////////////////modifySeat
+    
+    public static boolean deleteSeatFromDatabase(String seatIDToDelete) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Get a database connection
+            connection = Database.getConnection();
+
+            // Define the SQL query to delete the seat by SeatID
+            String query = "DELETE FROM Seat WHERE seatID = ?";
+
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameter for the prepared statement (seatID)
+            preparedStatement.setString(1, seatIDToDelete);
+
+            // Execute the DELETE query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if the deletion was successful
+            if (rowsAffected > 0) {
+                return true; // Deletion successful
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // Deletion failed
+    }
+    
 }
-    
-    
-    //Get the releated seatID's price
-//    public static double getSeatPrice(String SeatID, double Price){
-//        double price;
-//        for (int i = 0; i < seatArrayList.size(); i++){
-//            Seat seat = seatArrayList.get(i);
-//            if(seat.getSeatID().equals(SeatID)){
-//            price = seat.getPrice();
-//                 
-//            return price; // Return the Seat object when a matching SeatID is found.
-//            }
-//        }
-//        return 0;
-//      }
-    
-    
-//    //Check the related seatID's status (Is 1 or 2)
-//    public static Seat checkStatus(String targetSeatID) {
-//        String findSeat = null;
-//        String findVenueID = null;
-//        double findPrice = -1;
-//        int findStatus = 0;
-//        for (int i =0; i < seatArrayList.size(); i++) {
-//            Seat seat = seatArrayList.get(i);
-//            if (seat.getSeatID().equals(targetSeatID)) {
-//                findSeat = seat.getSeatID();
-//                findVenueID = seat.getVenue().getVenueID();
-//                findPrice = seat.getPrice();
-//                findStatus = seat.getStatus();
-//                return seat;
-//            }
-//        }
-//        return null;
-//        }
-    
-
-//        for (int i = 0; i < seatArrayList.size(); i++) {
-//            if (seatArrayList.get(i).getSeatID().equals(targetSeatID)) {
-//                if (seatArrayList.get(i).getStatus() == 1){       
-//                return true;
-//                }
-//            } 
-//        }
-//        return false;
-    
-
-//    CChange the status for seatID when ticket ........................
-//    public static void changeStatus(String targetSeatID){
-//        //change status to 2 when new ticket
-//        for (int i = 0; i < seatArrayList.size(); i++) {
-//            if (seatArrayList.get(i).getSeatID().equals(targetSeatID)) {
-//                seatArrayList.get(i).setStatus(2);    
-//            }
-//        }
-//    }
 

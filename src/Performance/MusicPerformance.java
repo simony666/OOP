@@ -9,7 +9,7 @@ package Performance;
  * @author Zy
  */
 
-public class MusicPerformance extends PerformanceType {
+public class MusicPerformance implements PerformanceType {
     private String typeName = "Music"; // Type name for Music Performance
     private String description = "An evening of musical entertainment with various genres, including jazz, rock, and pop";
 

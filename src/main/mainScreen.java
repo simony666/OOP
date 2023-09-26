@@ -185,16 +185,16 @@ public static void displayCustomer() {
     if (!CustomerManager.cusEnter()) {
         return;
     }
-
+    ClearScreen.cls();
     do {
         System.out.println("=====================================");
         System.out.println("======== Customer Interface  ========");
         System.out.println("=====================================");
-        System.out.println("====== 1) Modify Account        ======");
-        System.out.println("====== 2) Buy Tickets           ======");
-        System.out.println("====== 3) View Purchased Tickets ======");
-        System.out.println("====== 4) View Available Seats  ======");
-        System.out.println("====== 5) Back                  ======");
+        System.out.println("====== 1) Modify Account         ====");
+        System.out.println("====== 2) Buy Tickets            ====");
+        System.out.println("====== 3) View Purchased Tickets ====");
+        System.out.println("====== 4) View Available Seats   ====");
+        System.out.println("====== 5) Back                   ====");
         System.out.println("=====================================" + "\n");
 
         try {

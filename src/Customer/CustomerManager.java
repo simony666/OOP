@@ -208,6 +208,8 @@ public class CustomerManager {
         System.out.println("=====================================");
 
         // Get the list of venues
+        //ArrayList<Venue> venues = (ArrayList<Venue>) Venue.getAllVenuesFromDatabase();
+        Venue.getAllVenuesFromDatabase();
         ArrayList<Venue> venues = Venue.getVenueArrayList();
 
         // Display available venues
@@ -230,6 +232,7 @@ public class CustomerManager {
         Venue selectedVenue = venues.get(venueSelection - 1);
 
         // Get the list of seats for the selected venue
+        Seat.getAllSeatFromDatabase();
         ArrayList<Seat> seats = Seat.getSeatArrayList();
 
         // Display available seats for the selected venue
@@ -262,6 +265,8 @@ public class CustomerManager {
         System.out.println("=====================================");
 
         // Get the list of venues
+        //ArrayList<Venue> venues = (ArrayList<Venue>) Venue.getAllVenuesFromDatabase();
+        Venue.getAllVenuesFromDatabase();
         ArrayList<Venue> venues = Venue.getVenueArrayList();
 
         // Display available venues
@@ -284,6 +289,7 @@ public class CustomerManager {
         Venue selectedVenue = venues.get(venueSelection - 1);
 
         // Get the list of seats for the selected venue
+        Seat.getAllSeatFromDatabase();
         ArrayList<Seat> seats = Seat.getSeatArrayList();
 
         // Display available seats for the selected venue
@@ -292,15 +298,15 @@ public class CustomerManager {
         System.out.println("Seat Number\tPrice\tStatus");
 
         for (Seat seat : seats) {
-            if (seat.getVenue().getVenueID() == selectedVenue.getVenueID() && seat.getStatus()== 1) {
+            if (seat.getVenue().getVenueID().equals(selectedVenue.getVenueID()) && seat.getStatus()== 1) {
                 System.out.println(seat.getSeatID() + "\t\t$" + seat.getPrice() + "\t" + seat.getStatus());
             }
         }
 
         // Ask the user to select a seat
         System.out.print("Select a seat by entering its number: ");
-        int seatNumber = sc.nextInt();
-        sc.nextLine(); // Consume newline
+        String seatNumber = sc.nextLine();
+        //sc.nextLine(); // Consume newline
 
         // Find the selected seat
         Seat selectedSeat = null;
@@ -327,8 +333,8 @@ public class CustomerManager {
             
             System.out.println("=============:   Invoice   :=============" + "\n");
             System.out.printf("%-15s %-15s %-15s %-15s %-15s%n", "InvoiceID", "TicketID", "SeatID", "VenueID", "price");
-            System.out.println("\n_________________________________________________________");
-            System.out.printf("%-10s %-15s %-15s %-15s%n",
+            System.out.println("\n_______________________________________________________________________________");
+            System.out.printf("%-15s %-15s %-15s %-15s%n",
                     inv.getInvoiceID(),
                     inv.getTicket().getTicketID(),
                     inv.getSeat().getSeatID(),
@@ -337,7 +343,7 @@ public class CustomerManager {
             System.out.println("Pay At: " + new Date().toString());
 
             // Add the ticket information to the SQL table
-            String sqlText = "INSERT INTO ticket (customer, seat, venue) VALUES (\""+username+"\", \""+selectedSeat.getSeatID()+"\", \""+selectedVenue.getVenueID()+"\")";
+            String sqlText = "INSERT INTO Ticket (seat, venue) VALUES (\""+selectedSeat.getSeatID()+"\", \""+selectedVenue.getVenueID()+"\")";
             Database.runUpdate(sqlText);
         } else {
             System.out.println("Failed to book the seat. Please try again later.");
@@ -350,7 +356,7 @@ public class CustomerManager {
         System.out.println("==== View Purchased Tickets ========");
         System.out.println("=====================================");
 
-        ArrayList<Ticket> purchasedTickets = getPurchasedTickets(username);
+        ArrayList<Ticket> purchasedTickets = getPurchasedTickets();
 
         if (purchasedTickets.isEmpty()) {
             System.out.println("No purchased tickets found for the username: " + username);
@@ -372,10 +378,10 @@ public class CustomerManager {
         sc.nextLine();
     }
 
-    private static ArrayList<Ticket> getPurchasedTickets(String username) {
+    private static ArrayList<Ticket> getPurchasedTickets() {
         ArrayList<Ticket> purchasedTickets = new ArrayList<>();
 
-        String sqlText = "SELECT * FROM ticket WHERE customer = '" + username + "'";
+        String sqlText = "SELECT * FROM Ticket;";
         ResultSet result = Database.runQuery(sqlText);
 
         try {
@@ -413,7 +419,10 @@ public class CustomerManager {
         System.out.println("Name: " + customer.getName());
         System.out.println("Email: " + customer.getEmail());
         System.out.println("=====================================");
-
+        
+        boolean p = false;
+        boolean n = false;
+        boolean e = false;
         do {
             System.out.println("What would you like to modify?");
             System.out.println("1) Password");
@@ -429,20 +438,23 @@ public class CustomerManager {
                     System.out.print("Enter new password: ");
                     String newPassword = sc.nextLine();
                     customer.setPassword(newPassword);
+                    p = true;
                     break;
                 case "2":
                     System.out.print("Enter new name: ");
                     String newName = sc.nextLine();
                     customer.setName(newName);
+                    n = true;
                     break;
                 case "3":
                     System.out.print("Enter new email: ");
                     String newEmail = sc.nextLine();
                     customer.setEmail(newEmail);
+                    e = true;
                     break;
                 case "4":
                     // Save the updated customer information to the database
-                    updateCustomer(customer);
+                    updateCustomer(customer,p,n,e);
                     return;
                 default:
                     System.out.println("Invalid choice. Please enter a valid option.");
@@ -450,23 +462,24 @@ public class CustomerManager {
         } while (true);
     }
 
-    private static void updateCustomer(User user) {
-        String sqlText = "update `User` set " +
-                             "`password` = '" + user.getPassword() + "', " +
-                             "`name` = '" + user.getName() + "', " +
-                             "`email` = '" + user.getEmail() + "' " +
-                             "where `username` = '" + user.getUsername() + "';";
+    private static void updateCustomer(User user,boolean p,boolean n, boolean e) {
+        String sqlText;
+        if (p){
+            sqlText = "update `User` set `password` = '" + user.getPassword() + "' " +"where `username` = '" + user.getUsername() + "';";
+            Database.runUpdate(sqlText);
+        }
+        if (n){
+            sqlText = "update `User` set `name` = '" + user.getName() + "' " +"where `username` = '" + user.getUsername() + "';";
+            Database.runUpdate(sqlText);
+        }
+        
+        if (e){
+            sqlText = "update `User` set `email` = '" + user.getEmail() + "' " +"where `username` = '" + user.getUsername() + "';";
+            Database.runUpdate(sqlText);
+        }
 
-            int updateResult = Database.runUpdate(sqlText);
-
-            if (updateResult > 1) {
-                System.err.println("Multiple users changed!");
-            } else if (updateResult == 0) {
-                System.err.println("Update unsuccessful.");
-            } else {
-                System.out.println("Update successful.");
-                cusArray = getCustomerList();
-            }
+            System.out.println("Update successful.");
+            cusArray = getCustomerList();
     }
 
 }

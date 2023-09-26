@@ -25,8 +25,8 @@ import java.sql.SQLException;
 
 public class PerformanceManagement{
     // performance and Artist array List
-    static ArrayList<Performance> pfmArrayList = getPfm(); 
     static ArrayList<Artist> artistArrayList = ArtistManagement.getArtist();
+    static ArrayList<Performance> pfmArrayList = getPfm(); 
     private static List<PerformanceType> performanceTypes = new ArrayList<>();
 
     static {
@@ -34,7 +34,6 @@ public class PerformanceManagement{
         performanceTypes.add(new MusicPerformance());
         performanceTypes.add(new PopPerformance());
     }
-
     
     // display performance screen
     public static void displayPerformanceScreen(){

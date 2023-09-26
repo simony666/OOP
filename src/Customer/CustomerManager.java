@@ -384,7 +384,7 @@ public class CustomerManager {
     public static void modifyAccount(String username) {
         Customer customer = null;
         for (Customer cus : cusArray) {
-            if (cus.getUsername().equals(customer.getUsername())) {
+            if (cus.getUsername().equals(username)) {
                 customer = cus;
                 break;
             }

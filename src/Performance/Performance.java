@@ -141,4 +141,15 @@ public class Performance {
         // If artist with the given ID is not found, return null
         return null;
     }
+    
+    public static String getPerformanceName(int pId) {
+        // Implement logic to fetch the artist name based on artistId from your artistList
+        // Return the performance name or an appropriate default value if not found
+        for (Performance p : getPfmArrayList()) {
+            if (p.getId() == pId) {
+                return p.getName();
+            }
+        }
+        return ""; // Performance with the given ID not found, return an appropriate default value
+    }
 }

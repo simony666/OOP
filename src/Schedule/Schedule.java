@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import Performance.Performance;
+import Performance.PerformanceManagement;
 
 public class Schedule {
     private int id;
@@ -91,9 +92,7 @@ public class Schedule {
         return pId;
     }
 
-    public static ArrayList<Performance> getPfmArrayList() {
-        return pfmArrayList;
-    }
+   
     
     
 //    public static int getNextId() {
@@ -146,16 +145,13 @@ public class Schedule {
         this.pId = pId;
     }
 
-    public static void setPfmArrayList(ArrayList<Performance> pfmArrayList) {
-        Schedule.pfmArrayList = pfmArrayList;
-    }
     
     
     
     public Performance getPfmById(int pId) {
         // Implement logic to fetch an Artist object from the Artist list using artistId
         // Return the Artist object or null if not found
-        for (Performance p : pfmArrayList) {
+        for (Performance p : PerformanceManagement.getPfm()) {
             if (p.getId() == pId) {
                 return p; // Return the Artist object
             }

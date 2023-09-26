@@ -6,8 +6,13 @@ package Schedule;
 
 
 import Artist.Artist;
+import Artist.ArtistManagement;
 import Performance.Performance;
 import Performance.PerformanceManagement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,12 +24,14 @@ import java.util.Comparator;
 
 import util.ClearScreen;
 import util.Database;
+import static util.Database.runQuery;
 import util.Validator;
 
 public class ScheduleManagement {
-    static ArrayList<Schedule> scheduleList = Database.scheduleList;
-    static ArrayList<Performance> pfmArrayList = Database.pfmList; 
-    static ArrayList<Artist> artistArrayList = Database.artistList;
+    static ArrayList<Schedule> scheduleList = getSchedule();
+    static ArrayList<Performance> pfmArrayList = Performance.getPfmArrayList(); 
+    static ArrayList<Artist> artistArrayList = Artist.getArtistArrayList();
+    private static int nextId = 1; // Initialize nextId
 
     // Display Schedule Screen
     public static void displayScheduleScreen() {
@@ -268,7 +275,7 @@ public class ScheduleManagement {
                         //nextId++;
                         // Add the Schedule object to the ArrayList
                         //scheduleArrayList.add(schedule);
-                        Database.insertSchedule(schedule.getDate(), schedule.getStartTime(), schedule.getEndTime(), schedule.getDurationHours(),
+                        insertSchedule(schedule.getDate(), schedule.getStartTime(), schedule.getEndTime(), schedule.getDurationHours(),
                        schedule.getDurationMinutes(), schedule.getPerformance(), schedule.getpId());
 
 
@@ -509,7 +516,7 @@ public static void updateSchedule(ArrayList<Schedule> scheduleArrayList, ArrayLi
                 // Parse pId as an integer
                 int pIdInt = Integer.parseInt(newPId);
                 // Fetch the performanceName from the database based on the newPId
-                performanceName = Database.getPerformanceName(pIdInt); // Implement this method in your Database class
+                performanceName = Performance.getPerformanceName(pIdInt); // Implement this method in your Database class
                 scheduleToUpdate.setPerformanceName(performanceName);
 
                 // Update the performance name in the database
@@ -523,7 +530,7 @@ public static void updateSchedule(ArrayList<Schedule> scheduleArrayList, ArrayLi
 
 
         // Update the schedule in the database
-        Database.updateSchedule(sId, scheduleToUpdate.getDate(),
+        updateSchedule(sId, scheduleToUpdate.getDate(),
                 scheduleToUpdate.getStartTime(), scheduleToUpdate.getEndTime(),
                 scheduleToUpdate.getDurationHours(), scheduleToUpdate.getDurationMinutes(),
                 scheduleToUpdate.getPerformance(), scheduleToUpdate.getpId());
@@ -568,13 +575,169 @@ public static void updateSchedule(ArrayList<Schedule> scheduleArrayList, ArrayLi
                     System.out.println("The schedule ID is not available. Please try it again");
                 } else {
                     scheduleArrayList.remove(index);
-                    Database.deleteSchedule(sId);
+                    deleteSchedule(sId);
                     System.out.println("Remove schedule's ID successfully");
                 }
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a numeric value.");
         }
-    }    
+    }
+    
+    private static ArrayList<Schedule> getSchedule() {
+        ArrayList<Schedule> tempList = new ArrayList<>();
+        String sqlText = "SELECT * FROM `Schedule`;";
+        ResultSet result = runQuery(sqlText);
+        try {
+            while (result.next()) {
+            int id = result.getInt("id");
+            Date date = result.getDate("date");
+            String startTime = result.getString("startTime");
+            String endTime = result.getString("endTime");
+            int dHours = result.getInt("durationHours");
+            int dMinutes = result.getInt("durationMinutes");
+            //String pName = result.getString("performanceName");
+            int pId = result.getInt("performanceId");
+
+            // Call the getArtistName method to retrieve the artist's name
+            String pName = ArtistManagement.getArtistName(pId);
+
+            // Process the retrieved data here
+            Schedule tempSchedule = new Schedule(id, date, startTime, endTime, dHours, dMinutes,pName,pId);
+            tempList.add(tempSchedule);
+            }
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+        
+        return tempList;
+    }
+
+    
+
+    
+    public static void insertSchedule(Date date, String startTime, String endTime, int durationHours, int durationMinutes, Performance pName, int pIdInt) {
+        // Check for conflicting schedules
+        if (hasConflictingSchedule(pIdInt, date, startTime)) {
+            System.out.println("The artist already has a performance scheduled at the same date and time.");
+            return; // Exit the method if there's a conflict
+        }
+
+        // Proceed to insert the new schedule
+        String sql = "INSERT INTO `Schedule` (`date`, `startTime`, `endTime`, `durationHours`, `durationMinutes`, `performanceName`, `performanceId`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+        // Fetch the performance name based on the performance ID
+        String performanceName = pName.getName();
+
+        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setString(2, startTime);
+            preparedStatement.setString(3, endTime);
+            preparedStatement.setInt(4, durationHours);
+            preparedStatement.setInt(5, durationMinutes);
+            preparedStatement.setString(6, performanceName);
+            preparedStatement.setInt(7, pIdInt);
+
+            preparedStatement.executeUpdate();
+            System.out.println("Schedule added successfully!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // Method to check for conflicting schedules
+    private static boolean hasConflictingSchedule(int artistId, Date date, String startTime) {
+        String checkScheduleQuery = "SELECT COUNT(*) FROM Schedule WHERE performanceId = ? AND date = ? AND startTime = ?";
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(checkScheduleQuery)) {
+            preparedStatement.setInt(1, artistId);
+            preparedStatement.setDate(2, sqlDate);
+            preparedStatement.setString(3, startTime);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next() && resultSet.getInt(1) > 0) {
+                return true; // Conflicting schedule found
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // No conflict
+    }
+    
+    private static Schedule findScheduleById(int scheduleId) {
+            // Implement logic to search for the performance in your performanceList
+            // Return the found Performance object or null if not found
+            for (Schedule s : scheduleList) {
+                if (s.getId() == scheduleId) {
+                    return s; // Found the schedule by ID
+                }
+            }
+            return null;
+    }
+    
+    
+    public static void updateSchedule(int sId, Date date, String startTime, String endTime, int durationHours, int durationMinutes, Performance pName, int pIdInt) {
+        // Check if there are any schedules in the list
+        if (scheduleList.isEmpty()) {
+            System.out.println("No schedules added. Please add a schedule to update.");
+            return;
+        }
+
+        // Find the schedule by ID
+        Schedule scheduleToUpdate = null;
+        for (Schedule s : scheduleList) {
+            if (s.getId() == sId) {
+                scheduleToUpdate = s;
+                break;
+            }
+        }
+
+        if (scheduleToUpdate == null) {
+            System.out.println("The schedule with ID " + sId + " does not exist.");
+            return;
+        }
+
+        // Proceed to update the schedule
+        String sql = "UPDATE `Schedule` SET `date` = ?, `startTime` = ?, `endTime` = ?, `durationHours` = ?, `durationMinutes` = ?, `performanceName` = ?, `performanceId` = ? WHERE `id` = ?";
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+        // Fetch the performance name based on the performance object
+        String performanceName = pName.getName();
+
+        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setString(2, startTime);
+            preparedStatement.setString(3, endTime);
+            preparedStatement.setInt(4, durationHours);
+            preparedStatement.setInt(5, durationMinutes);
+            preparedStatement.setString(6, performanceName);
+            preparedStatement.setInt(7, pIdInt);
+            preparedStatement.setInt(8, sId); // Set the ID for the WHERE clause
+
+            preparedStatement.executeUpdate();
+            System.out.println("Schedule updated successfully!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Update the schedule object
+        scheduleToUpdate.setDate(date);
+        scheduleToUpdate.setStartTime(startTime);
+        scheduleToUpdate.setEndTime(endTime);
+        scheduleToUpdate.setDurationHours(durationHours);
+        scheduleToUpdate.setDurationMinutes(durationMinutes);
+        scheduleToUpdate.setPerformanceName(performanceName);
+        scheduleToUpdate.setpId(pIdInt);
+    }
+
+    
+    public static void deleteSchedule(String Id) {
+        String sql = "DELETE FROM `Schedule` WHERE `id` = " + Id + ";";
+        Database.runUpdate(sql);
+    }
 }
 
